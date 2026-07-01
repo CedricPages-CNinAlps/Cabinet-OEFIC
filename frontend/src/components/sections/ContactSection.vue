@@ -342,6 +342,7 @@ select.form-control {
 }
 
 .contact__hours h4 {
+  font-family: var(--font-body, 'Inter', sans-serif);
   color: var(--color-gold);
   font-size: 0.85rem;
   text-transform: uppercase;
