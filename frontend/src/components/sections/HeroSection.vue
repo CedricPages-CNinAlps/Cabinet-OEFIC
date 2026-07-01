@@ -12,7 +12,7 @@
 
     <!-- Contenu hero -->
     <div class="hero__content" ref="contentRef">
-      <!-- Logo -->
+      <!-- Logo à gauche -->
       <div class="hero__logo" ref="logoRef">
         <img
           :src="config?.logoUrl || '/assets/logo.png'"
@@ -66,11 +66,12 @@
         </div>
       </div>
 
-      <!-- Scroll indicator -->
-      <div class="hero__scroll" ref="scrollRef">
-        <span>Découvrir</span>
-        <div class="hero__scroll-line"></div>
-      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="hero__scroll" ref="scrollRef">
+      <span>Découvrir</span>
+      <div class="hero__scroll-line"></div>
     </div>
   </section>
 </template>
@@ -132,14 +133,14 @@ onMounted(() => {
 
   tl.fromTo(
     logoRef.value,
-    { opacity: 0, y: -40, scale: 0.9 },
-    { opacity: 1, y: 0, scale: 1, duration: 0.9 }
+    { opacity: 0, x: -50, scale: 0.9 },
+    { opacity: 1, x: 0, scale: 1, duration: 0.9 }
   )
   .fromTo(
     glassRef.value,
-    { opacity: 0, y: 50, scale: 0.96 },
-    { opacity: 1, y: 0, scale: 1, duration: 1 },
-    '-=0.5'
+    { opacity: 0, x: 50, scale: 0.96 },
+    { opacity: 1, x: 0, scale: 1, duration: 1 },
+    '-=0.6'
   )
   .fromTo(
     scrollRef.value,
@@ -187,31 +188,33 @@ onUnmounted(() => {
   position: relative;
   z-index: 2;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 2rem;
+  gap: 4rem;
   width: 100%;
-  max-width: 800px;
-  padding: 6rem 2rem 4rem;
+  padding: 6rem 4rem 4rem;
 }
 
-/* Logo */
+/* Logo à gauche */
 .hero__logo {
+  flex: 1 1 50%;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .hero__logo img {
-  height: 90px;
+  height: 440px;
   width: auto;
+  max-width: 100%;
   object-fit: contain;
-  filter: brightness(0) invert(1);
-  drop-shadow: 0 4px 20px rgba(201, 168, 76, 0.4);
+  filter: brightness(0) invert(1) drop-shadow(0 4px 24px rgba(201, 168, 76, 0.35));
 }
 
 /* Glass card */
 .hero__glass {
-  width: 100%;
+  flex: 1 1 50%;
+  min-width: 0;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -325,6 +328,11 @@ onUnmounted(() => {
 
 /* Scroll indicator */
 .hero__scroll {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -350,7 +358,25 @@ onUnmounted(() => {
 /* ===========================
    Responsive
    =========================== */
+@media (max-width: 900px) {
+  .hero__content {
+    flex-direction: column;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+    gap: 2.5rem;
+    max-width: 600px;
+  }
+
+  .hero__logo img {
+    height: 140px;
+  }
+}
+
 @media (max-width: 768px) {
+  .hero__content {
+    padding-top: 4rem;
+  }
+
   .hero__glass {
     padding: 2rem 1.5rem;
   }
@@ -370,6 +396,22 @@ onUnmounted(() => {
 
   .hero__quick-stat strong {
     font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero__logo img {
+    height: 110px;
+  }
+
+  .hero__quick-stats {
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 1.25rem;
+  }
+
+  .hero__quick-stat-divider {
+    display: none;
   }
 }
 </style>

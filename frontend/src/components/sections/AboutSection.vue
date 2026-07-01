@@ -274,15 +274,27 @@ onUnmounted(() => observer?.disconnect())
     order: -1;
   }
 
+  .about__img,
+  .about__img-placeholder {
+    height: 300px;
+  }
+
   .about__badge {
     width: 80px;
     height: 80px;
-    top: -12px;
-    right: -12px;
+    top: -10px;
+    right: 8px;
   }
 
   .about__badge strong {
     font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about__img,
+  .about__img-placeholder {
+    height: 240px;
   }
 }
 </style>

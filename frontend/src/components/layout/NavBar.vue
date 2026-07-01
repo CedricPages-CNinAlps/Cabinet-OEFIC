@@ -97,10 +97,14 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 }
 
 .navbar__logo img {
-  height: 52px;
+  height: 80px;
   width: auto;
   object-fit: contain;
-  transition: opacity 0.2s ease;
+  transition: height 0.35s ease, opacity 0.2s ease;
+}
+
+.navbar--scrolled .navbar__logo img {
+  height: 52px;
 }
 
 .navbar__logo:hover img {
@@ -116,10 +120,14 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 .navbar__link {
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--color-text);
+  color: rgba(255, 255, 255, 0.85);
   letter-spacing: 0.01em;
   transition: color 0.2s ease;
   position: relative;
+}
+
+.navbar--scrolled .navbar__link {
+  color: var(--color-text);
 }
 
 .navbar__link::after {
@@ -184,6 +192,14 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 @media (max-width: 768px) {
   .navbar__burger {
     display: flex;
+  }
+
+  .navbar__burger span {
+    background: #fff;
+  }
+
+  .navbar--scrolled .navbar__burger span {
+    background: var(--color-text);
   }
 
   .navbar__nav {

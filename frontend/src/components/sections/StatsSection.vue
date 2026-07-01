@@ -150,6 +150,10 @@ onUnmounted(() => observer?.disconnect())
 }
 
 @media (max-width: 900px) {
+  .stats {
+    padding: 3rem 1.25rem;
+  }
+
   .stats__grid {
     grid-template-columns: repeat(2, 1fr);
   }

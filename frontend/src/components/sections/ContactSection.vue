@@ -369,4 +369,14 @@ select.form-control {
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 768px) {
+  .contact__form-wrapper {
+    padding: 1.5rem;
+  }
+
+  .contact__card {
+    padding: 1.5rem;
+  }
+}
 </style>

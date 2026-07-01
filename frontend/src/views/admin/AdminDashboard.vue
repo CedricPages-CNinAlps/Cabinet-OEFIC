@@ -1,9 +1,30 @@
 <template>
   <div class="admin">
+    <!-- Toast notification -->
+    <transition name="toast">
+      <div v-if="saveMessage" class="admin-toast" :class="`admin-toast--${saveType}`">
+        <svg v-if="saveType === 'ok'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
+        <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        {{ saveMessage }}
+      </div>
+    </transition>
+
+    <!-- Overlay mobile -->
+    <div
+      v-if="sidebarOpen"
+      class="admin-overlay"
+      @click="sidebarOpen = false"
+    ></div>
+
     <!-- Sidebar -->
-    <aside class="admin-sidebar">
+    <aside class="admin-sidebar" :class="{ 'admin-sidebar--open': sidebarOpen }">
       <div class="admin-sidebar__logo">
         <img src="/assets/logo.png" alt="OEFIC" />
+        <button class="admin-sidebar__close" @click="sidebarOpen = false" aria-label="Fermer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
       </div>
       <nav class="admin-sidebar__nav">
         <button
@@ -11,7 +32,7 @@
           :key="tab.id"
           class="admin-sidebar__item"
           :class="{ 'admin-sidebar__item--active': activeTab === tab.id }"
-          @click="activeTab = tab.id"
+          @click="selectTab(tab.id)"
         >
           <span class="admin-sidebar__icon" v-html="tab.icon"></span>
           <span>{{ tab.label }}</span>
@@ -31,6 +52,19 @@
 
     <!-- Contenu principal -->
     <main class="admin-main">
+      <!-- Top bar mobile -->
+      <div class="admin-topbar">
+        <button class="admin-topbar__burger" @click="sidebarOpen = true" aria-label="Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <span class="admin-topbar__title">{{ currentTabLabel }}</span>
+        <div class="admin-topbar__save" v-if="saveMessage">
+          <span :class="`save-msg save-msg--${saveType}`">{{ saveMessage }}</span>
+        </div>
+      </div>
+
       <div class="admin-main__header">
         <h1>{{ currentTabLabel }}</h1>
         <div class="admin-main__save" v-if="saveMessage">
@@ -247,7 +281,10 @@
           <p v-if="!localContent.footer.legalLinks?.length" class="admin-empty-hint">Aucun lien légal. Cliquez "+ Ajouter".</p>
         </div>
 
-        <button class="btn btn-primary" @click="saveConfigAndFooter">Enregistrer</button>
+        <button class="btn btn-primary btn-save" @click="saveConfigAndFooter">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+            Enregistrer
+</button>
       </div>
 
       <!-- ===========================
@@ -290,7 +327,10 @@
             </div>
           </div>
         </div>
-        <button class="btn btn-primary" @click="saveContent">Enregistrer</button>
+        <button class="btn btn-primary btn-save" @click="saveContent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+            Enregistrer
+          </button>
       </div>
 
       <!-- ===========================
@@ -327,11 +367,40 @@
                   <div class="form-group">
                     <label>Icône</label>
                     <select v-model="svc.icon" class="form-control">
-                      <option value="patrimoine">🏛 Patrimoine</option>
-                      <option value="investissement">📈 Investissement</option>
-                      <option value="assurance">🛡 Assurance</option>
-                      <option value="banque">🏦 Banque/Crédit</option>
-                      <option value="fonds">💰 Levée de Fonds</option>
+                      <optgroup label="Patrimoine & Investissement">
+                        <option value="patrimoine">🏛 Gestion de Patrimoine</option>
+                        <option value="investissement">📈 Investissement</option>
+                        <option value="placement">🥧 Placements Financiers</option>
+                        <option value="bourse">📊 Bourse & Marchés</option>
+                        <option value="epargne">💳 Épargne</option>
+                        <option value="immobilier">🏢 Investissement Immobilier</option>
+                        <option value="scpi">🏘 SCPI / Pierre-Papier</option>
+                      </optgroup>
+                      <optgroup label="Assurance & Prévoyance">
+                        <option value="assurance">🛡 Assurance Vie</option>
+                        <option value="prevoyance">✅ Prévoyance</option>
+                        <option value="retraite">👤 Retraite</option>
+                        <option value="sante">🩺 Santé & Mutuelle</option>
+                      </optgroup>
+                      <optgroup label="Banque & Crédit">
+                        <option value="banque">🏦 Banque</option>
+                        <option value="credit">💳 Crédit & Financement</option>
+                      </optgroup>
+                      <optgroup label="Fiscalité & Optimisation">
+                        <option value="fiscalite">📄 Optimisation Fiscale</option>
+                        <option value="defiscalisation">➖ Défiscalisation</option>
+                      </optgroup>
+                      <optgroup label="Transmission & Entreprise">
+                        <option value="succession">👥 Succession & Transmission</option>
+                        <option value="entreprise">🏢 Gestion d'Entreprise</option>
+                        <option value="fonds">💰 Levée de Fonds</option>
+                        <option value="conseil">💬 Conseil</option>
+                        <option value="audit">✔ Audit & Bilan</option>
+                      </optgroup>
+                      <optgroup label="Divers">
+                        <option value="crypto">₿ Crypto-actifs</option>
+                        <option value="philanthropie">❤ Philanthropie</option>
+                      </optgroup>
                     </select>
                   </div>
                 </div>
@@ -356,7 +425,10 @@
             </template>
           </draggable>
         </div>
-        <button class="btn btn-primary" @click="saveContent">Enregistrer</button>
+        <button class="btn btn-primary btn-save" @click="saveContent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+            Enregistrer
+          </button>
       </div>
 
       <!-- ===========================
@@ -429,7 +501,10 @@
             <button class="btn-delete" @click="localContent.about.milestones.splice(i, 1)">×</button>
           </div>
         </div>
-        <button class="btn btn-primary" @click="saveContent">Enregistrer</button>
+        <button class="btn btn-primary btn-save" @click="saveContent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+            Enregistrer
+          </button>
       </div>
 
       <!-- ===========================
@@ -462,7 +537,10 @@
             </div>
           </div>
         </div>
-        <button class="btn btn-primary" @click="saveContent">Enregistrer</button>
+        <button class="btn btn-primary btn-save" @click="saveContent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+            Enregistrer
+          </button>
       </div>
 
       <!-- ===========================
@@ -522,7 +600,10 @@
             </div>
           </div>
         </div>
-        <button class="btn btn-primary" @click="saveContent">Enregistrer</button>
+        <button class="btn btn-primary btn-save" @click="saveContent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+            Enregistrer
+          </button>
       </div>
 
       <!-- ===========================
@@ -554,7 +635,10 @@
             <input v-model="localSeo.ogImage" type="url" class="form-control" placeholder="/assets/og-image.jpg" />
           </div>
         </div>
-        <button class="btn btn-primary" @click="saveSeo">Enregistrer</button>
+        <button class="btn btn-primary btn-save" @click="saveSeo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+            Enregistrer
+          </button>
       </div>
 
       <!-- ===========================
@@ -659,7 +743,10 @@
             </label>
           </div>
         </div>
-        <button class="btn btn-primary" @click="saveTracking">Enregistrer</button>
+        <button class="btn btn-primary btn-save" @click="saveTracking">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+            Enregistrer
+          </button>
       </div>
 
       <!-- ===========================
@@ -751,7 +838,13 @@ const api = useApi()
 const { config, content, seo, tracking } = storeToRefs(store)
 
 const activeTab = ref('config')
+const sidebarOpen = ref(false)
 const saveMessage = ref('')
+
+function selectTab(id: string) {
+  activeTab.value = id
+  sidebarOpen.value = false
+}
 const saveType = ref<'ok' | 'err'>('ok')
 const dragOver = ref(false)
 const uploading = ref(false)
@@ -795,7 +888,7 @@ const currentTabLabel = computed(() => tabs.find(t => t.id === activeTab.value)?
 function showSave(msg: string, type: 'ok' | 'err' = 'ok') {
   saveMessage.value = msg
   saveType.value = type
-  setTimeout(() => { saveMessage.value = '' }, 3000)
+  setTimeout(() => { saveMessage.value = '' }, 6000)
 }
 
 async function saveConfigAndFooter() {
@@ -1113,6 +1206,62 @@ onMounted(() => {
 .save-msg--err {
   background: rgba(239,68,68,0.1);
   color: #dc2626;
+}
+
+/* Bouton enregistrer compact */
+.btn-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.8rem;
+  margin-top: 1.5rem;
+  width: fit-content;
+  align-self: flex-start;
+}
+
+/* Toast fixe */
+.admin-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  pointer-events: none;
+}
+
+.admin-toast--ok {
+  background: #fff;
+  color: #15803d;
+  border: 1px solid rgba(34,197,94,0.3);
+}
+
+.admin-toast--err {
+  background: #fff;
+  color: #dc2626;
+  border: 1px solid rgba(239,68,68,0.3);
+}
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.3s ease;
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(12px);
 }
 
 /* Panel */
@@ -1533,6 +1682,119 @@ onMounted(() => {
   .admin-grid-2,
   .admin-grid-3 {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Overlay mobile */
+.admin-overlay {
+  display: none;
+}
+
+/* Bouton fermer dans sidebar (caché desktop) */
+.admin-sidebar__close {
+  display: none;
+}
+
+/* Top bar mobile (cachée desktop) */
+.admin-topbar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Overlay */
+  .admin-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 19;
+  }
+
+  /* Sidebar en drawer */
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 20;
+  }
+
+  .admin-sidebar--open {
+    transform: translateX(0);
+  }
+
+  .admin-sidebar__logo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .admin-sidebar__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 0.25rem;
+    border-radius: 6px;
+    transition: color 0.2s;
+  }
+
+  .admin-sidebar__close:hover {
+    color: #fff;
+  }
+
+  /* Top bar */
+  .admin-topbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--color-text);
+    padding: 0.75rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .admin-topbar__burger {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .admin-topbar__burger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #fff;
+    border-radius: 1px;
+  }
+
+  .admin-topbar__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    flex: 1;
+  }
+
+  .admin-topbar__save {
+    font-size: 0.8rem;
+  }
+
+  /* Masquer le header desktop sur mobile */
+  .admin-main__header {
+    display: none;
+  }
+
+  .admin-main {
+    margin-left: 0;
+    padding: 1rem;
+    min-height: auto;
   }
 }
 </style>

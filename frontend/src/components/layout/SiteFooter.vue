@@ -153,15 +153,18 @@ const hasLegalNumbers = computed(() => {
 .footer__brand {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 1.25rem;
 }
 
 .footer__logo {
-  height: 52px;
+  height: 100px;
   width: auto;
   object-fit: contain;
   filter: brightness(0) invert(1);
   opacity: 0.9;
+  align-self: center;
 }
 
 .footer__desc {
@@ -322,17 +325,24 @@ const hasLegalNumbers = computed(() => {
     flex-direction: column;
     align-items: center;
     gap: 0.3rem;
+    text-align: center;
   }
 }
 
 @media (max-width: 580px) {
   .footer__main {
     grid-template-columns: 1fr;
+    padding-top: 3rem;
   }
 
   .footer__bottom-inner {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer__legal-links {
+    justify-content: center;
   }
 }
 </style>
