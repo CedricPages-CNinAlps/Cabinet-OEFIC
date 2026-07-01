@@ -214,6 +214,7 @@ const hasLegalNumbers = computed(() => {
   grid-column: 1 / -1;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.5rem 2rem;
   padding-top: 2rem;
   font-family: var(--font-body, 'Inter', sans-serif);
