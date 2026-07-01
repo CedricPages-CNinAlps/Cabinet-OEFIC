@@ -47,24 +47,20 @@ export const useSiteConfigStore = defineStore('siteConfig', () => {
 
   function applyFonts(cfg: SiteConfig) {
     const weights = cfg.fonts.weights.join(';')
-    const families = encodeURIComponent(
-      `${cfg.fonts.heading}:wght@${weights}|${cfg.fonts.body}:wght@${weights}`
-    )
+    const headingParam = cfg.fonts.heading.replace(/\s+/g, '+')
+    const bodyParam = cfg.fonts.body.replace(/\s+/g, '+')
+
     const existingLink = document.getElementById('google-fonts-link')
     if (existingLink) existingLink.remove()
+
     const link = document.createElement('link')
     link.id = 'google-fonts-link'
     link.rel = 'stylesheet'
-    link.href = `https://fonts.googleapis.com/css2?family=${families}&display=swap`
+    link.href = `https://fonts.googleapis.com/css2?family=${headingParam}:wght@${weights}&family=${bodyParam}:wght@${weights}&display=swap`
     document.head.appendChild(link)
-    document.documentElement.style.setProperty(
-      '--font-heading',
-      `'${cfg.fonts.heading}', serif`
-    )
-    document.documentElement.style.setProperty(
-      '--font-body',
-      `'${cfg.fonts.body}', sans-serif`
-    )
+
+    document.documentElement.style.setProperty('--font-heading', `'${cfg.fonts.heading}', serif`)
+    document.documentElement.style.setProperty('--font-body', `'${cfg.fonts.body}', sans-serif`)
   }
 
   async function updateConfig(data: Partial<SiteConfig>) {
