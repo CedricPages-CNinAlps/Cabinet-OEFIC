@@ -61,9 +61,12 @@
       <div class="container footer__bottom-inner">
         <p class="footer__copyright">
           &copy; {{ currentYear }} {{ config?.siteName || 'Cabinet OEFIC' }}. Tous droits réservés.
-          <span v-if="config?.legalInfo?.orias">
-            — N° ORIAS : {{ config.legalInfo.orias }}
-          </span>
+          <span v-if="config?.legalInfo?.orias"> — N° ORIAS : {{ config.legalInfo.orias }}</span>
+          <span v-if="config?.legalInfo?.cif"> — N° CIF : {{ config.legalInfo.cif }}</span>
+          <span v-if="config?.legalInfo?.carteT"> — Carte T : {{ config.legalInfo.carteT }}</span>
+          <span v-if="config?.legalInfo?.rcPro"> — RC Pro : {{ config.legalInfo.rcPro }}</span>
+          <span v-if="config?.legalInfo?.tvaIntra"> — TVA : {{ config.legalInfo.tvaIntra }}</span>
+          <span v-if="config?.legalInfo?.siret"> — SIRET : {{ config.legalInfo.siret }}</span>
         </p>
         <div class="footer__legal-links">
           <a

@@ -113,16 +113,38 @@
         </div>
 
         <div class="admin-section">
-          <h3>Informations légales & Contact</h3>
+          <h3>Numéros réglementaires</h3>
           <div class="admin-grid-2">
             <div class="form-group">
               <label>N° ORIAS</label>
               <input v-model="localConfig.legalInfo.orias" type="text" class="form-control" placeholder="00 00 00 00" />
             </div>
             <div class="form-group">
+              <label>N° CIF</label>
+              <input v-model="localConfig.legalInfo.cif" type="text" class="form-control" placeholder="Conseiller en Investissements Financiers" />
+            </div>
+            <div class="form-group">
+              <label>N° Carte T</label>
+              <input v-model="localConfig.legalInfo.carteT" type="text" class="form-control" placeholder="Transactions immobilières" />
+            </div>
+            <div class="form-group">
+              <label>N° RC Pro</label>
+              <input v-model="localConfig.legalInfo.rcPro" type="text" class="form-control" placeholder="Responsabilité Civile Professionnelle" />
+            </div>
+            <div class="form-group">
+              <label>N° TVA Intracommunautaire</label>
+              <input v-model="localConfig.legalInfo.tvaIntra" type="text" class="form-control" placeholder="FR00 000000000" />
+            </div>
+            <div class="form-group">
               <label>SIRET</label>
               <input v-model="localConfig.legalInfo.siret" type="text" class="form-control" />
             </div>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <h3>Coordonnées</h3>
+          <div class="admin-grid-2">
             <div class="form-group">
               <label>Téléphone</label>
               <input v-model="localConfig.legalInfo.phone" type="text" class="form-control" />
@@ -698,7 +720,7 @@ const localConfig = reactive<SiteConfig>(JSON.parse(JSON.stringify(config.value 
   colors: { bg: '#FFFFFF', bgSoft: '#F5F5F7', text: '#1e1a34', gold: '#C9A84C', goldDark: '#A8873E' },
   fonts: { heading: 'Playfair Display', body: 'Inter', weights: ['400', '600', '700'] },
   socialLinks: {},
-  legalInfo: { orias: '', siret: '', address: '', city: '', phone: '', email: '' }
+  legalInfo: { orias: '', cif: '', carteT: '', rcPro: '', tvaIntra: '', siret: '', address: '', city: '', phone: '', email: '' }
 })))
 
 const localContent = reactive<SiteContent>(JSON.parse(JSON.stringify(content.value || {})))

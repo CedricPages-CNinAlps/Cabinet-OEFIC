@@ -22,6 +22,10 @@ export interface SiteConfig {
   }
   legalInfo: {
     orias: string
+    cif: string
+    carteT: string
+    rcPro: string
+    tvaIntra: string
     siret: string
     address: string
     city: string
