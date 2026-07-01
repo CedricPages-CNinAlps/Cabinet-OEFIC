@@ -213,6 +213,10 @@
             <label>Mention copyright</label>
             <input v-model="localContent.footer.copyrightText" type="text" class="form-control"
               :placeholder="`© ${new Date().getFullYear()} Cabinet OEFIC. Tous droits réservés.`" />
+            <p class="admin-section-hint" style="margin-top:0.4rem">
+              Pour ajouter un lien : <code>[texte affiché](https://url.fr)</code><br>
+              Ex. : <code>© 2026 [Cabinet OEFIC](https://cabinet-oefic.fr). Tous droits réservés.</code>
+            </p>
           </div>
 
           <div class="admin-section__header" style="margin-top:1.25rem">

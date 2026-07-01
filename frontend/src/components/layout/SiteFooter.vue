@@ -73,9 +73,7 @@
     <!-- Bottom bar -->
     <div class="footer__bottom">
       <div class="container footer__bottom-inner">
-        <p class="footer__copyright">
-          {{ footer?.copyrightText || `© ${currentYear} ${config?.siteName || 'Cabinet OEFIC'}. Tous droits réservés.` }}
-        </p>
+        <p class="footer__copyright" v-html="copyrightHtml"></p>
         <div class="footer__legal-links">
           <a
             v-for="link in footer?.legalLinks"
@@ -119,6 +117,15 @@ const mapsUrl = computed(() => {
   return isApple
     ? `https://maps.apple.com/?q=${query}`
     : `https://www.google.com/maps/search/?api=1&query=${query}`
+})
+
+const copyrightHtml = computed(() => {
+  const raw = footer.value?.copyrightText
+    || `© ${currentYear} ${config.value?.siteName || 'Cabinet OEFIC'}. Tous droits réservés.`
+  return raw.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    '<a href="$2" target="_blank" rel="noopener">$1</a>'
+  )
 })
 
 const hasLegalNumbers = computed(() => {
@@ -253,6 +260,15 @@ const hasLegalNumbers = computed(() => {
 .footer__copyright {
   font-size: 0.8rem;
   color: var(--footer-text, rgba(255, 255, 255, 0.7));
+}
+
+.footer__copyright :deep(a) {
+  color: var(--color-gold);
+  transition: opacity 0.2s ease;
+}
+
+.footer__copyright :deep(a:hover) {
+  opacity: 0.8;
 }
 
 .footer__legal-links {
