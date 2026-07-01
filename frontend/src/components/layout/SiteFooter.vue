@@ -123,7 +123,7 @@ const hasLegalNumbers = computed(() => {
   grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 3rem;
   padding-top: 5rem;
-  padding-bottom: 2rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid color-mix(in srgb, var(--footer-text, white) 10%, transparent);
 }
 
@@ -216,8 +216,8 @@ const hasLegalNumbers = computed(() => {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.5rem 2rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
   font-family: var(--font-body, 'Inter', sans-serif);
   font-size: 0.75rem;
   color: #ffffff;
