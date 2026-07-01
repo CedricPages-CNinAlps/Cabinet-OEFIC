@@ -216,11 +216,9 @@ const hasLegalNumbers = computed(() => {
   flex-wrap: wrap;
   gap: 0.5rem 2rem;
   padding-top: 2rem;
-  border-top: 1px solid color-mix(in srgb, var(--footer-text, white) 10%, transparent);
   font-family: var(--font-body, 'Inter', sans-serif);
   font-size: 0.75rem;
-  color: var(--footer-text, rgba(255, 255, 255, 0.7));
-  opacity: 0.6;
+  color: #ffffff;
 }
 
 /* Bottom */
