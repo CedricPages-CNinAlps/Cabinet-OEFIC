@@ -114,6 +114,11 @@
 
         <div class="admin-section">
           <h3>Numéros réglementaires</h3>
+          <div class="form-group" style="margin-bottom:1rem">
+            <label>Titre affiché dans le footer</label>
+            <input v-model="localContent.footer.legalNumbersTitle" type="text" class="form-control"
+              placeholder="Numéros réglementaires" />
+          </div>
           <div class="admin-grid-2">
             <div class="form-group">
               <label>N° ORIAS</label>
@@ -139,11 +144,6 @@
               <label>SIRET</label>
               <input v-model="localConfig.legalInfo.siret" type="text" class="form-control" />
             </div>
-          </div>
-          <div class="form-group" style="margin-top:0.75rem">
-            <label>Titre affiché dans le footer</label>
-            <input v-model="localContent.footer.legalNumbersTitle" type="text" class="form-control"
-              placeholder="Numéros réglementaires" />
           </div>
         </div>
 
