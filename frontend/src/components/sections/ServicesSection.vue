@@ -72,29 +72,16 @@ function iconComponent(icon: string) {
 }
 
 .services__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
-}
-
-/* Forcer 3 colonnes max puis 2 sur mobile */
-@media (min-width: 900px) {
-  .services__grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  /* Le 4e et 5e sont centrés */
-  .service-card:nth-child(4) {
-    grid-column: 1 / span 1;
-    margin-left: auto;
-  }
-
-  .service-card:nth-child(5) {
-    grid-column: 3 / span 1;
-  }
+  justify-content: center;
 }
 
 .service-card {
+  flex: 0 0 calc(33.333% - 1rem);
+  min-width: 280px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -167,8 +154,9 @@ function iconComponent(icon: string) {
 }
 
 @media (max-width: 768px) {
-  .services__grid {
-    grid-template-columns: 1fr;
+  .service-card {
+    flex: 1 1 100%;
+    max-width: 100%;
   }
 }
 </style>
