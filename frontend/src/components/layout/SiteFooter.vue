@@ -92,7 +92,7 @@ const currentYear = new Date().getFullYear()
 
 const footerStyle = computed(() => ({
   backgroundColor: footer.value?.bgColor || '#1e1a34',
-  color: footer.value?.textColor || 'rgba(255,255,255,0.7)'
+  '--footer-text': footer.value?.textColor || 'rgba(255,255,255,0.7)'
 }))
 
 const hasSocials = computed(() => {
@@ -103,7 +103,7 @@ const hasSocials = computed(() => {
 
 <style scoped>
 .footer {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--footer-text, rgba(255, 255, 255, 0.7));
 }
 
 .footer__main {
@@ -112,7 +112,7 @@ const hasSocials = computed(() => {
   gap: 3rem;
   padding-top: 5rem;
   padding-bottom: 4rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid color-mix(in srgb, var(--footer-text, white) 10%, transparent);
 }
 
 /* Brand */
@@ -133,7 +133,8 @@ const hasSocials = computed(() => {
 .footer__desc {
   font-size: 0.875rem;
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--footer-text, rgba(255, 255, 255, 0.7));
+  opacity: 0.75;
   max-width: 300px;
 }
 
@@ -147,17 +148,19 @@ const hasSocials = computed(() => {
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--footer-text, white) 10%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--footer-text, rgba(255, 255, 255, 0.7));
+  opacity: 0.75;
   transition: all 0.2s ease;
 }
 
 .footer__social:hover {
   background: var(--color-gold);
   color: #fff;
+  opacity: 1;
 }
 
 .footer__social svg {
@@ -167,6 +170,7 @@ const hasSocials = computed(() => {
 
 /* Colonnes */
 .footer__col h4 {
+  font-family: var(--font-heading, 'Playfair Display', serif);
   font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -185,12 +189,14 @@ const hasSocials = computed(() => {
 .footer__col li a,
 .footer__col li {
   font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.6);
-  transition: color 0.2s ease;
+  color: var(--footer-text, rgba(255, 255, 255, 0.7));
+  opacity: 0.75;
+  transition: color 0.2s ease, opacity 0.2s ease;
 }
 
 .footer__col li a:hover {
   color: var(--color-gold);
+  opacity: 1;
 }
 
 /* Bottom */
@@ -208,7 +214,8 @@ const hasSocials = computed(() => {
 
 .footer__copyright {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--footer-text, rgba(255, 255, 255, 0.7));
+  opacity: 0.5;
 }
 
 .footer__legal-links {
@@ -220,8 +227,9 @@ const hasSocials = computed(() => {
 .footer__legal-links a,
 .footer__cookie-btn {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.4);
-  transition: color 0.2s ease;
+  color: var(--footer-text, rgba(255, 255, 255, 0.7));
+  opacity: 0.5;
+  transition: color 0.2s ease, opacity 0.2s ease;
   cursor: pointer;
   background: none;
   border: none;
@@ -232,6 +240,7 @@ const hasSocials = computed(() => {
 .footer__legal-links a:hover,
 .footer__cookie-btn:hover {
   color: var(--color-gold);
+  opacity: 1;
 }
 
 @media (max-width: 900px) {
