@@ -113,7 +113,12 @@ const hasSocials = computed(() => {
 
 const mapsUrl = computed(() => {
   const parts = [config.value?.legalInfo?.address, config.value?.legalInfo?.city].filter(Boolean).join(', ')
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(parts)}`
+  const query = encodeURIComponent(parts)
+  const ua = navigator.userAgent
+  const isApple = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)
+  return isApple
+    ? `https://maps.apple.com/?q=${query}`
+    : `https://www.google.com/maps/search/?api=1&query=${query}`
 })
 
 const hasLegalNumbers = computed(() => {
