@@ -211,7 +211,7 @@ onUnmounted(() => observer?.disconnect())
 }
 
 .about__img-overlay strong {
-  font-family: var(--font-heading);
+  font-family: var(--font-body, 'Inter', sans-serif);
   font-size: 1.4rem;
   color: #fff;
 }
