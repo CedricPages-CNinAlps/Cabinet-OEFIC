@@ -134,7 +134,6 @@ const hasSocials = computed(() => {
   font-size: 0.875rem;
   line-height: 1.7;
   color: var(--footer-text, rgba(255, 255, 255, 0.7));
-  opacity: 0.75;
   max-width: 300px;
 }
 
@@ -172,7 +171,7 @@ const hasSocials = computed(() => {
 .footer__col h4 {
   font-family: var(--font-body, 'Inter', sans-serif);
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--color-gold);
@@ -214,7 +213,6 @@ const hasSocials = computed(() => {
 .footer__copyright {
   font-size: 0.8rem;
   color: var(--footer-text, rgba(255, 255, 255, 0.7));
-  opacity: 0.5;
 }
 
 .footer__legal-links {
@@ -227,8 +225,7 @@ const hasSocials = computed(() => {
 .footer__cookie-btn {
   font-size: 0.8rem;
   color: var(--footer-text, rgba(255, 255, 255, 0.7));
-  opacity: 0.5;
-  transition: color 0.2s ease, opacity 0.2s ease;
+  transition: color 0.2s ease;
   cursor: pointer;
   background: none;
   border: none;
