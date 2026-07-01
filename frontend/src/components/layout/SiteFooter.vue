@@ -241,6 +241,7 @@ const hasLegalNumbers = computed(() => {
   letter-spacing: 0.12em;
   color: var(--color-gold);
   margin-bottom: 0.25rem;
+  text-align: center;
 }
 
 .footer__legal-numbers {
@@ -315,6 +316,12 @@ const hasLegalNumbers = computed(() => {
 
   .footer__brand {
     grid-column: 1 / -1;
+  }
+
+  .footer__legal-numbers {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
   }
 }
 
