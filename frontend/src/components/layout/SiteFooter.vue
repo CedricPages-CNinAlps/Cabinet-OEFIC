@@ -52,7 +52,9 @@
             <a :href="`mailto:${config.legalInfo.email}`">{{ config.legalInfo.email }}</a>
           </li>
           <li v-if="config?.legalInfo?.address || config?.legalInfo?.city">
-            {{ config.legalInfo.address }}<span v-if="config.legalInfo.address && config.legalInfo.city">, </span>{{ config.legalInfo.city }}
+            <a :href="mapsUrl" target="_blank" rel="noopener">
+              {{ config.legalInfo.address }}<span v-if="config.legalInfo.address && config.legalInfo.city">, </span>{{ config.legalInfo.city }}
+            </a>
           </li>
         </ul>
       </div>
@@ -107,6 +109,11 @@ const footerStyle = computed(() => ({
 const hasSocials = computed(() => {
   const s = config.value?.socialLinks || {}
   return Object.values(s).some(Boolean)
+})
+
+const mapsUrl = computed(() => {
+  const parts = [config.value?.legalInfo?.address, config.value?.legalInfo?.city].filter(Boolean).join(', ')
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(parts)}`
 })
 
 const hasLegalNumbers = computed(() => {
