@@ -140,6 +140,11 @@
               <input v-model="localConfig.legalInfo.siret" type="text" class="form-control" />
             </div>
           </div>
+          <div class="form-group" style="margin-top:0.75rem">
+            <label>Titre affiché dans le footer</label>
+            <input v-model="localContent.footer.legalNumbersTitle" type="text" class="form-control"
+              placeholder="Numéros réglementaires" />
+          </div>
         </div>
 
         <div class="admin-section">
@@ -217,12 +222,6 @@
               Pour ajouter un lien : <code>[texte affiché](https://url.fr)</code><br>
               Ex. : <code>© 2026 [Cabinet OEFIC](https://cabinet-oefic.fr). Tous droits réservés.</code>
             </p>
-          </div>
-
-          <div class="form-group" style="margin-top:1.25rem">
-            <label>Titre "Numéros réglementaires"</label>
-            <input v-model="localContent.footer.legalNumbersTitle" type="text" class="form-control"
-              placeholder="Numéros réglementaires" />
           </div>
 
           <div class="admin-section__header" style="margin-top:1.25rem">
