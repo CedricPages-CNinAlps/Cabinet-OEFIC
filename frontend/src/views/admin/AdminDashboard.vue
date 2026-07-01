@@ -99,15 +99,16 @@
 
         <div class="admin-section">
           <h3>Typographie (Google Fonts)</h3>
+          <p class="admin-section-hint">Chaque police est prévisualisée dans sa propre typographie. Utilisez la barre de recherche ou filtrez par catégorie.</p>
           <div class="admin-grid-2">
-            <div class="form-group">
-              <label>Police titres</label>
-              <input v-model="localConfig.fonts.heading" type="text" class="form-control" placeholder="Playfair Display" />
-            </div>
-            <div class="form-group">
-              <label>Police corps de texte</label>
-              <input v-model="localConfig.fonts.body" type="text" class="form-control" placeholder="Inter" />
-            </div>
+            <FontPicker
+              v-model="localConfig.fonts.heading"
+              label="Police des titres"
+            />
+            <FontPicker
+              v-model="localConfig.fonts.body"
+              label="Police du corps de texte"
+            />
           </div>
         </div>
 
@@ -625,6 +626,7 @@ import { useSiteConfigStore } from '@/stores/siteConfig'
 import { useAuthStore } from '@/stores/auth'
 import { useApi } from '@/composables/useApi'
 import type { SiteConfig, SiteContent, SeoConfig, TrackingConfig, MediaFile } from '@/types'
+import FontPicker from '@/components/admin/FontPicker.vue'
 
 const router = useRouter()
 const store = useSiteConfigStore()
@@ -995,9 +997,16 @@ onMounted(() => {
   font-size: 1rem;
   font-weight: 700;
   color: var(--color-text);
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.5rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid #f0f0f5;
+}
+
+.admin-section-hint {
+  font-size: 0.8rem;
+  color: rgba(30,26,52,0.45);
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
 }
 
 .admin-section__header {
