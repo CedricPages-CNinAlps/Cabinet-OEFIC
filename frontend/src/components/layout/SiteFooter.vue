@@ -190,8 +190,7 @@ const hasSocials = computed(() => {
 .footer__col li {
   font-size: 0.875rem;
   color: var(--footer-text, rgba(255, 255, 255, 0.7));
-  opacity: 0.75;
-  transition: color 0.2s ease, opacity 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .footer__col li a:hover {
