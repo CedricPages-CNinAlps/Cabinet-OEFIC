@@ -51,7 +51,9 @@
           <li v-if="config?.legalInfo?.email">
             <a :href="`mailto:${config.legalInfo.email}`">{{ config.legalInfo.email }}</a>
           </li>
-          <li v-if="config?.legalInfo?.address">{{ config.legalInfo.address }}</li>
+          <li v-if="config?.legalInfo?.address || config?.legalInfo?.city">
+            {{ config.legalInfo.address }}<span v-if="config.legalInfo.address && config.legalInfo.city">, </span>{{ config.legalInfo.city }}
+          </li>
         </ul>
       </div>
 
