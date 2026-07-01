@@ -54,6 +54,16 @@
           <li v-if="config?.legalInfo?.address">{{ config.legalInfo.address }}</li>
         </ul>
       </div>
+
+      <!-- Numéros réglementaires -->
+      <div v-if="hasLegalNumbers" class="footer__legal-numbers">
+        <span v-if="config?.legalInfo?.orias">N° ORIAS : {{ config.legalInfo.orias }}</span>
+        <span v-if="config?.legalInfo?.cif">N° CIF : {{ config.legalInfo.cif }}</span>
+        <span v-if="config?.legalInfo?.carteT">Carte T : {{ config.legalInfo.carteT }}</span>
+        <span v-if="config?.legalInfo?.rcPro">RC Pro : {{ config.legalInfo.rcPro }}</span>
+        <span v-if="config?.legalInfo?.tvaIntra">TVA : {{ config.legalInfo.tvaIntra }}</span>
+        <span v-if="config?.legalInfo?.siret">SIRET : {{ config.legalInfo.siret }}</span>
+      </div>
     </div>
 
     <!-- Bottom bar -->
@@ -61,12 +71,6 @@
       <div class="container footer__bottom-inner">
         <p class="footer__copyright">
           &copy; {{ currentYear }} {{ config?.siteName || 'Cabinet OEFIC' }}. Tous droits réservés.
-          <span v-if="config?.legalInfo?.orias"> — N° ORIAS : {{ config.legalInfo.orias }}</span>
-          <span v-if="config?.legalInfo?.cif"> — N° CIF : {{ config.legalInfo.cif }}</span>
-          <span v-if="config?.legalInfo?.carteT"> — Carte T : {{ config.legalInfo.carteT }}</span>
-          <span v-if="config?.legalInfo?.rcPro"> — RC Pro : {{ config.legalInfo.rcPro }}</span>
-          <span v-if="config?.legalInfo?.tvaIntra"> — TVA : {{ config.legalInfo.tvaIntra }}</span>
-          <span v-if="config?.legalInfo?.siret"> — SIRET : {{ config.legalInfo.siret }}</span>
         </p>
         <div class="footer__legal-links">
           <a
@@ -101,6 +105,11 @@ const footerStyle = computed(() => ({
 const hasSocials = computed(() => {
   const s = config.value?.socialLinks || {}
   return Object.values(s).some(Boolean)
+})
+
+const hasLegalNumbers = computed(() => {
+  const l = config.value?.legalInfo
+  return l && (l.orias || l.cif || l.carteT || l.rcPro || l.tvaIntra || l.siret)
 })
 </script>
 
@@ -198,6 +207,20 @@ const hasSocials = computed(() => {
 .footer__col li a:hover {
   color: var(--color-gold);
   opacity: 1;
+}
+
+/* Numéros réglementaires */
+.footer__legal-numbers {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid color-mix(in srgb, var(--footer-text, white) 10%, transparent);
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.75rem;
+  color: var(--footer-text, rgba(255, 255, 255, 0.7));
+  opacity: 0.6;
 }
 
 /* Bottom */
