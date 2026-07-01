@@ -170,7 +170,7 @@ const hasSocials = computed(() => {
 
 /* Colonnes */
 .footer__col h4 {
-  font-family: var(--font-heading, 'Playfair Display', serif);
+  font-family: var(--font-body, 'Inter', sans-serif);
   font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
