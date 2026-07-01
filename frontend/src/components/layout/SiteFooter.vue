@@ -74,7 +74,7 @@
     <div class="footer__bottom">
       <div class="container footer__bottom-inner">
         <p class="footer__copyright">
-          &copy; {{ currentYear }} {{ config?.siteName || 'Cabinet OEFIC' }}. Tous droits réservés.
+          {{ footer?.copyrightText || `© ${currentYear} ${config?.siteName || 'Cabinet OEFIC'}. Tous droits réservés.` }}
         </p>
         <div class="footer__legal-links">
           <a

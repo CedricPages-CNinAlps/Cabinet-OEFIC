@@ -209,6 +209,11 @@
             <textarea v-model="localContent.footer.description" class="form-control" rows="3"
               placeholder="Cabinet spécialisé en gestion de patrimoine depuis 1984..."></textarea>
           </div>
+          <div class="form-group" style="margin-top:0.75rem">
+            <label>Mention copyright</label>
+            <input v-model="localContent.footer.copyrightText" type="text" class="form-control"
+              :placeholder="`© ${new Date().getFullYear()} Cabinet OEFIC. Tous droits réservés.`" />
+          </div>
 
           <div class="admin-section__header" style="margin-top:1.25rem">
             <label class="form-label-bold">Liens de navigation</label>

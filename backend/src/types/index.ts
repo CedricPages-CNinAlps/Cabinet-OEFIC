@@ -100,6 +100,7 @@ export interface FooterContent {
   legalLinks: Array<{ label: string; href: string }>;
   bgColor: string;
   textColor: string;
+  copyrightText: string;
 }
 
 export interface SiteContent {
