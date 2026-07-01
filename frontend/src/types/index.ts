@@ -61,6 +61,10 @@ export interface AboutContent {
   imageUrl: string
   bgColor: string
   milestones: Array<{ year: string; label: string }>
+  badgeValue: string
+  badgeLabel: string
+  placeholderTitle: string
+  placeholderSubtitle: string
 }
 
 export interface Stat {

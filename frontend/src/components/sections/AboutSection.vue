@@ -34,14 +34,14 @@
             />
             <div v-else class="about__img-placeholder">
               <div class="about__img-overlay">
-                <strong>Cabinet OEFIC</strong>
-                <span>Depuis 1984</span>
+                <strong>{{ about?.placeholderTitle || 'Cabinet OEFIC' }}</strong>
+                <span>{{ about?.placeholderSubtitle || 'Depuis 1984' }}</span>
               </div>
             </div>
             <!-- Badge flottant -->
             <div class="about__badge">
-              <strong>40</strong>
-              <span>ans d'expertise</span>
+              <strong>{{ about?.badgeValue || '40' }}</strong>
+              <span>{{ about?.badgeLabel || "ans d'expertise" }}</span>
             </div>
           </div>
         </div>
@@ -109,6 +109,7 @@ onUnmounted(() => observer?.disconnect())
    =========================== */
 .about__text .eyebrow {
   display: block;
+  font-family: var(--font-body, 'Inter', sans-serif);
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.15em;
@@ -122,6 +123,7 @@ onUnmounted(() => observer?.disconnect())
 }
 
 .about__para {
+  font-family: var(--font-body, 'Inter', sans-serif);
   color: var(--color-text-muted);
   line-height: 1.8;
   margin-bottom: 1rem;
@@ -164,6 +166,7 @@ onUnmounted(() => observer?.disconnect())
 }
 
 .about__milestone-label {
+  font-family: var(--font-body, 'Inter', sans-serif);
   font-size: 0.9rem;
   color: var(--color-text-muted);
 }
@@ -245,6 +248,7 @@ onUnmounted(() => observer?.disconnect())
 }
 
 .about__badge span {
+  font-family: var(--font-body, 'Inter', sans-serif);
   font-size: 0.6rem;
   text-align: center;
   text-transform: uppercase;

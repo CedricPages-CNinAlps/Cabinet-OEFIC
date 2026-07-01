@@ -373,6 +373,37 @@
             </div>
           </div>
         </div>
+
+        <div class="admin-section">
+          <h3>Badge flottant</h3>
+          <p class="admin-section-hint">Cercle doré affiché en haut à droite de l'image.</p>
+          <div class="admin-grid-2">
+            <div class="form-group">
+              <label>Valeur (ex. 40)</label>
+              <input v-model="localContent.about.badgeValue" type="text" class="form-control" placeholder="40" />
+            </div>
+            <div class="form-group">
+              <label>Texte sous la valeur</label>
+              <input v-model="localContent.about.badgeLabel" type="text" class="form-control" placeholder="ans d'expertise" />
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <h3>Cadre sans image</h3>
+          <p class="admin-section-hint">Affiché à la place de l'image quand aucune URL n'est renseignée.</p>
+          <div class="admin-grid-2">
+            <div class="form-group">
+              <label>Titre</label>
+              <input v-model="localContent.about.placeholderTitle" type="text" class="form-control" placeholder="Cabinet OEFIC" />
+            </div>
+            <div class="form-group">
+              <label>Sous-titre</label>
+              <input v-model="localContent.about.placeholderSubtitle" type="text" class="form-control" placeholder="Depuis 1984" />
+            </div>
+          </div>
+        </div>
+
         <div class="admin-section">
           <div class="admin-section__header">
             <h3>Jalons (timeline)</h3>
