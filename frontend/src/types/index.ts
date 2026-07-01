@@ -91,6 +91,7 @@ export interface FooterContent {
   quickLinks: Array<{ label: string; href: string }>
   legalLinks: Array<{ label: string; href: string }>
   bgColor: string
+  textColor: string
 }
 
 export interface SiteContent {

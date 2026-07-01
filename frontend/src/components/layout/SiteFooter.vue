@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer" :style="footerBg">
+  <footer class="footer" :style="footerStyle">
     <div class="footer__main container">
       <div class="footer__brand">
         <img
@@ -90,10 +90,10 @@ const footer = computed(() => content.value?.footer)
 
 const currentYear = new Date().getFullYear()
 
-const footerBg = computed(() => {
-  const bg = footer.value?.bgColor || '#1e1a34'
-  return { backgroundColor: bg }
-})
+const footerStyle = computed(() => ({
+  backgroundColor: footer.value?.bgColor || '#1e1a34',
+  color: footer.value?.textColor || 'rgba(255,255,255,0.7)'
+}))
 
 const hasSocials = computed(() => {
   const s = config.value?.socialLinks || {}

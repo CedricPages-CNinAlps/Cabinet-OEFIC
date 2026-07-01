@@ -163,7 +163,55 @@
             </div>
           </div>
         </div>
-        <button class="btn btn-primary" @click="saveConfig">Enregistrer</button>
+        <!-- Footer -->
+        <div class="admin-section">
+          <h3>Footer</h3>
+          <div class="admin-grid-2">
+            <div class="form-group">
+              <label>Couleur de fond</label>
+              <div class="color-picker-row">
+                <input type="color" v-model="localContent.footer.bgColor" class="color-input" />
+                <input type="text" v-model="localContent.footer.bgColor" class="form-control form-control--sm" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Couleur du texte</label>
+              <div class="color-picker-row">
+                <input type="color" v-model="localContent.footer.textColor" class="color-input" />
+                <input type="text" v-model="localContent.footer.textColor" class="form-control form-control--sm" />
+              </div>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:0.75rem">
+            <label>Texte de présentation</label>
+            <textarea v-model="localContent.footer.description" class="form-control" rows="3"
+              placeholder="Cabinet spécialisé en gestion de patrimoine depuis 1984..."></textarea>
+          </div>
+
+          <div class="admin-section__header" style="margin-top:1.25rem">
+            <label class="form-label-bold">Liens de navigation</label>
+            <button class="btn-add" @click="addQuickLink">+ Ajouter</button>
+          </div>
+          <div v-for="(link, i) in localContent.footer.quickLinks" :key="i" class="link-row">
+            <input v-model="link.label" type="text" class="form-control form-control--sm" placeholder="Libellé" />
+            <input v-model="link.href" type="text" class="form-control" placeholder="#section ou /page" />
+            <button class="btn-delete" @click="localContent.footer.quickLinks.splice(i, 1)">×</button>
+          </div>
+          <p v-if="!localContent.footer.quickLinks?.length" class="admin-empty-hint">Aucun lien. Cliquez "+ Ajouter".</p>
+
+          <div class="admin-section__header" style="margin-top:1.25rem">
+            <label class="form-label-bold">Liens légaux</label>
+            <button class="btn-add" @click="addLegalLink">+ Ajouter</button>
+          </div>
+          <div v-for="(link, i) in localContent.footer.legalLinks" :key="i" class="link-row">
+            <input v-model="link.label" type="text" class="form-control form-control--sm" placeholder="Libellé" />
+            <input v-model="link.href" type="text" class="form-control" placeholder="/mentions-legales" />
+            <button class="btn-delete" @click="localContent.footer.legalLinks.splice(i, 1)">×</button>
+          </div>
+          <p v-if="!localContent.footer.legalLinks?.length" class="admin-empty-hint">Aucun lien légal. Cliquez "+ Ajouter".</p>
+        </div>
+
+        <button class="btn btn-primary" @click="saveConfigAndFooter">Enregistrer</button>
       </div>
 
       <!-- ===========================
@@ -591,76 +639,6 @@
       </div>
 
       <!-- ===========================
-           ONGLET : Footer
-           =========================== -->
-      <div v-if="activeTab === 'footer'" class="admin-panel">
-
-        <!-- Apparence -->
-        <div class="admin-section">
-          <h3>Apparence</h3>
-          <div class="admin-grid-2">
-            <div class="form-group">
-              <label>Couleur de fond</label>
-              <div class="color-picker-row">
-                <input type="color" v-model="localContent.footer.bgColor" class="color-input" />
-                <input type="text" v-model="localContent.footer.bgColor" class="form-control form-control--sm" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Description -->
-        <div class="admin-section">
-          <h3>Texte de présentation</h3>
-          <p class="admin-section-hint">Affiché sous le logo dans la colonne de gauche du footer.</p>
-          <div class="form-group">
-            <textarea v-model="localContent.footer.description" class="form-control" rows="4"
-              placeholder="Cabinet spécialisé en gestion de patrimoine depuis 1984..."></textarea>
-          </div>
-        </div>
-
-        <!-- Liens de navigation -->
-        <div class="admin-section">
-          <div class="admin-section__header">
-            <h3>Liens de navigation</h3>
-            <button class="btn-add" @click="addQuickLink">+ Ajouter</button>
-          </div>
-          <p class="admin-section-hint">Liens affichés dans la colonne "Navigation" du footer.</p>
-          <div v-for="(link, i) in localContent.footer.quickLinks" :key="i" class="link-row">
-            <input v-model="link.label" type="text" class="form-control form-control--sm" placeholder="Libellé" />
-            <input v-model="link.href" type="text" class="form-control" placeholder="#section ou /page" />
-            <button class="btn-delete" @click="localContent.footer.quickLinks.splice(i, 1)">×</button>
-          </div>
-          <p v-if="!localContent.footer.quickLinks?.length" class="admin-empty-hint">Aucun lien. Cliquez "+ Ajouter".</p>
-        </div>
-
-        <!-- Liens légaux -->
-        <div class="admin-section">
-          <div class="admin-section__header">
-            <h3>Liens légaux</h3>
-            <button class="btn-add" @click="addLegalLink">+ Ajouter</button>
-          </div>
-          <p class="admin-section-hint">Affichés dans la barre inférieure du footer (ex. Mentions légales, CGU, RGPD…).</p>
-          <div v-for="(link, i) in localContent.footer.legalLinks" :key="i" class="link-row">
-            <input v-model="link.label" type="text" class="form-control form-control--sm" placeholder="Libellé" />
-            <input v-model="link.href" type="text" class="form-control" placeholder="/mentions-legales" />
-            <button class="btn-delete" @click="localContent.footer.legalLinks.splice(i, 1)">×</button>
-          </div>
-          <p v-if="!localContent.footer.legalLinks?.length" class="admin-empty-hint">Aucun lien légal. Cliquez "+ Ajouter".</p>
-        </div>
-
-        <!-- Rappel réseaux sociaux -->
-        <div class="admin-section admin-section--info">
-          <h3>Réseaux sociaux & Informations légales</h3>
-          <p class="admin-section-hint">
-            Les réseaux sociaux (LinkedIn, Twitter, Facebook) et les informations légales (ORIAS, SIRET, adresse, téléphone, email) sont configurables dans l'onglet <strong>Configuration</strong>.
-          </p>
-        </div>
-
-        <button class="btn btn-primary" @click="saveContent">Enregistrer le footer</button>
-      </div>
-
-      <!-- ===========================
            ONGLET : Mot de passe
            =========================== -->
       <div v-if="activeTab === 'password'" class="admin-panel">
@@ -741,7 +719,6 @@ const tabs = [
   { id: 'contact', label: 'Contact / EmailJS', icon: '✉️' },
   { id: 'seo', label: 'SEO', icon: '🔍' },
   { id: 'tracking', label: 'Tracking & Cookies', icon: '📍' },
-  { id: 'footer', label: 'Footer', icon: '📄' },
   { id: 'media', label: 'Médias', icon: '🖼' },
   { id: 'password', label: 'Mot de passe', icon: '🔐' }
 ]
@@ -752,6 +729,18 @@ function showSave(msg: string, type: 'ok' | 'err' = 'ok') {
   saveMessage.value = msg
   saveType.value = type
   setTimeout(() => { saveMessage.value = '' }, 3000)
+}
+
+async function saveConfigAndFooter() {
+  try {
+    await Promise.all([
+      store.updateConfig(localConfig),
+      store.updateContent(localContent)
+    ])
+    showSave('✓ Configuration enregistrée')
+  } catch (e) {
+    showSave('Erreur : ' + (e as Error).message, 'err')
+  }
 }
 
 async function saveConfig() {
@@ -1249,6 +1238,12 @@ onMounted(() => {
 
 .link-row .form-control--sm {
   flex: 0 0 160px;
+}
+
+.form-label-bold {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 .admin-empty-hint {
