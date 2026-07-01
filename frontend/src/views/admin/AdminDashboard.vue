@@ -591,6 +591,76 @@
       </div>
 
       <!-- ===========================
+           ONGLET : Footer
+           =========================== -->
+      <div v-if="activeTab === 'footer'" class="admin-panel">
+
+        <!-- Apparence -->
+        <div class="admin-section">
+          <h3>Apparence</h3>
+          <div class="admin-grid-2">
+            <div class="form-group">
+              <label>Couleur de fond</label>
+              <div class="color-picker-row">
+                <input type="color" v-model="localContent.footer.bgColor" class="color-input" />
+                <input type="text" v-model="localContent.footer.bgColor" class="form-control form-control--sm" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="admin-section">
+          <h3>Texte de présentation</h3>
+          <p class="admin-section-hint">Affiché sous le logo dans la colonne de gauche du footer.</p>
+          <div class="form-group">
+            <textarea v-model="localContent.footer.description" class="form-control" rows="4"
+              placeholder="Cabinet spécialisé en gestion de patrimoine depuis 1984..."></textarea>
+          </div>
+        </div>
+
+        <!-- Liens de navigation -->
+        <div class="admin-section">
+          <div class="admin-section__header">
+            <h3>Liens de navigation</h3>
+            <button class="btn-add" @click="addQuickLink">+ Ajouter</button>
+          </div>
+          <p class="admin-section-hint">Liens affichés dans la colonne "Navigation" du footer.</p>
+          <div v-for="(link, i) in localContent.footer.quickLinks" :key="i" class="link-row">
+            <input v-model="link.label" type="text" class="form-control form-control--sm" placeholder="Libellé" />
+            <input v-model="link.href" type="text" class="form-control" placeholder="#section ou /page" />
+            <button class="btn-delete" @click="localContent.footer.quickLinks.splice(i, 1)">×</button>
+          </div>
+          <p v-if="!localContent.footer.quickLinks?.length" class="admin-empty-hint">Aucun lien. Cliquez "+ Ajouter".</p>
+        </div>
+
+        <!-- Liens légaux -->
+        <div class="admin-section">
+          <div class="admin-section__header">
+            <h3>Liens légaux</h3>
+            <button class="btn-add" @click="addLegalLink">+ Ajouter</button>
+          </div>
+          <p class="admin-section-hint">Affichés dans la barre inférieure du footer (ex. Mentions légales, CGU, RGPD…).</p>
+          <div v-for="(link, i) in localContent.footer.legalLinks" :key="i" class="link-row">
+            <input v-model="link.label" type="text" class="form-control form-control--sm" placeholder="Libellé" />
+            <input v-model="link.href" type="text" class="form-control" placeholder="/mentions-legales" />
+            <button class="btn-delete" @click="localContent.footer.legalLinks.splice(i, 1)">×</button>
+          </div>
+          <p v-if="!localContent.footer.legalLinks?.length" class="admin-empty-hint">Aucun lien légal. Cliquez "+ Ajouter".</p>
+        </div>
+
+        <!-- Rappel réseaux sociaux -->
+        <div class="admin-section admin-section--info">
+          <h3>Réseaux sociaux & Informations légales</h3>
+          <p class="admin-section-hint">
+            Les réseaux sociaux (LinkedIn, Twitter, Facebook) et les informations légales (ORIAS, SIRET, adresse, téléphone, email) sont configurables dans l'onglet <strong>Configuration</strong>.
+          </p>
+        </div>
+
+        <button class="btn btn-primary" @click="saveContent">Enregistrer le footer</button>
+      </div>
+
+      <!-- ===========================
            ONGLET : Mot de passe
            =========================== -->
       <div v-if="activeTab === 'password'" class="admin-panel">
@@ -671,6 +741,7 @@ const tabs = [
   { id: 'contact', label: 'Contact / EmailJS', icon: '✉️' },
   { id: 'seo', label: 'SEO', icon: '🔍' },
   { id: 'tracking', label: 'Tracking & Cookies', icon: '📍' },
+  { id: 'footer', label: 'Footer', icon: '📄' },
   { id: 'media', label: 'Médias', icon: '🖼' },
   { id: 'password', label: 'Mot de passe', icon: '🔐' }
 ]
@@ -738,6 +809,16 @@ function removeService(i: number) {
 
 function addMilestone() {
   localContent.about.milestones.push({ year: '', label: '' })
+}
+
+function addQuickLink() {
+  if (!localContent.footer.quickLinks) localContent.footer.quickLinks = []
+  localContent.footer.quickLinks.push({ label: '', href: '' })
+}
+
+function addLegalLink() {
+  if (!localContent.footer.legalLinks) localContent.footer.legalLinks = []
+  localContent.footer.legalLinks.push({ label: '', href: '' })
 }
 
 // Médias
@@ -1152,6 +1233,39 @@ onMounted(() => {
 
 .milestone-row .form-control {
   flex: 1;
+}
+
+/* Footer link rows */
+.link-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.link-row .form-control {
+  flex: 1;
+}
+
+.link-row .form-control--sm {
+  flex: 0 0 160px;
+}
+
+.admin-empty-hint {
+  font-size: 0.82rem;
+  color: rgba(30,26,52,0.35);
+  font-style: italic;
+  padding: 0.5rem 0;
+}
+
+.admin-section--info {
+  background: rgba(201,168,76,0.06);
+  border-color: rgba(201,168,76,0.2);
+}
+
+.admin-section--info h3 {
+  color: var(--color-gold, #C9A84C);
+  border-bottom-color: rgba(201,168,76,0.2);
 }
 
 /* Tracking toggles */
