@@ -61,6 +61,7 @@
 
       <!-- Numéros réglementaires -->
       <div v-if="hasLegalNumbers" class="footer__legal-numbers">
+        <h4 v-if="footer?.legalNumbersTitle" class="footer__legal-numbers-title">{{ footer.legalNumbersTitle }}</h4>
         <span v-if="config?.legalInfo?.orias">N° ORIAS : {{ config.legalInfo.orias }}</span>
         <span v-if="config?.legalInfo?.cif">N° CIF : {{ config.legalInfo.cif }}</span>
         <span v-if="config?.legalInfo?.carteT">Carte T : {{ config.legalInfo.carteT }}</span>
@@ -231,6 +232,17 @@ const hasLegalNumbers = computed(() => {
 }
 
 /* Numéros réglementaires */
+.footer__legal-numbers-title {
+  flex: 0 0 100%;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.8rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-gold);
+  margin-bottom: 0.25rem;
+}
+
 .footer__legal-numbers {
   grid-column: 1 / -1;
   display: flex;

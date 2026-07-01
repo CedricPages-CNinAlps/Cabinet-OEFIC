@@ -101,6 +101,7 @@ export interface FooterContent {
   bgColor: string;
   textColor: string;
   copyrightText: string;
+  legalNumbersTitle: string;
 }
 
 export interface SiteContent {

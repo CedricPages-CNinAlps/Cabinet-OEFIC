@@ -219,6 +219,12 @@
             </p>
           </div>
 
+          <div class="form-group" style="margin-top:1.25rem">
+            <label>Titre "Numéros réglementaires"</label>
+            <input v-model="localContent.footer.legalNumbersTitle" type="text" class="form-control"
+              placeholder="Numéros réglementaires" />
+          </div>
+
           <div class="admin-section__header" style="margin-top:1.25rem">
             <label class="form-label-bold">Liens de navigation</label>
             <button class="btn-add" @click="addQuickLink">+ Ajouter</button>
