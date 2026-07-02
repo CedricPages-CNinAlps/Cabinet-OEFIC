@@ -15,7 +15,7 @@
       <!-- Logo à gauche -->
       <div class="hero__logo" ref="logoRef">
         <img
-          :src="config?.logoUrl || '/assets/logo.png'"
+          :src="resolveAssetUrl(config?.logoUrl || '/assets/logo.png')"
           :alt="config?.siteName || 'Cabinet OEFIC'"
         />
       </div>
@@ -80,6 +80,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSiteConfigStore } from '@/stores/siteConfig'
+import { resolveAssetUrl } from '@/utils/asset'
 import { gsap } from 'gsap'
 
 const { config, content } = storeToRefs(useSiteConfigStore())

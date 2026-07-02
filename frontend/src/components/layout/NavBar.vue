@@ -3,7 +3,7 @@
     <div class="navbar__container">
       <!-- Logo -->
       <a href="#" class="navbar__logo" @click.prevent="scrollToTop">
-        <img :src="config?.logoUrl || '/assets/logo.png'" :alt="config?.siteName || 'Cabinet OEFIC'" />
+        <img :src="resolveAssetUrl(config?.logoUrl || '/assets/logo.png')" :alt="config?.siteName || 'Cabinet OEFIC'" />
       </a>
 
       <!-- Nav Links (desktop) -->
@@ -36,6 +36,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSiteConfigStore } from '@/stores/siteConfig'
+import { resolveAssetUrl } from '@/utils/asset'
 
 const { config } = storeToRefs(useSiteConfigStore())
 

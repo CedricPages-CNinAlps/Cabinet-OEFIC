@@ -3,7 +3,7 @@
     <div class="footer__main container">
       <div class="footer__brand">
         <img
-          :src="config?.logoUrl || '/assets/logo.png'"
+          :src="resolveAssetUrl(config?.logoUrl || '/assets/logo.png')"
           :alt="config?.siteName"
           class="footer__logo"
         />
@@ -94,6 +94,7 @@
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSiteConfigStore } from '@/stores/siteConfig'
+import { resolveAssetUrl } from '@/utils/asset'
 
 const { config, content } = storeToRefs(useSiteConfigStore())
 const footer = computed(() => content.value?.footer)

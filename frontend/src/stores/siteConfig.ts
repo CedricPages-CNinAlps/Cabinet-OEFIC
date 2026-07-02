@@ -2,6 +2,10 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import { useApi } from '@/composables/useApi'
 import type { SiteConfig, SiteContent, SeoConfig, TrackingConfig } from '@/types'
+import fallbackConfig from '@/data/config.json'
+import fallbackContent from '@/data/content.json'
+import fallbackSeo from '@/data/seo.json'
+import fallbackTracking from '@/data/tracking.json'
 
 export const useSiteConfigStore = defineStore('siteConfig', () => {
   const api = useApi()
@@ -30,6 +34,14 @@ export const useSiteConfigStore = defineStore('siteConfig', () => {
       applyColorVars(cfg)
       applyFonts(cfg)
     } catch (e) {
+      // No backend reachable (e.g. static hosting on GitHub Pages) — fall back to the
+      // last known content baked into the build at deploy time.
+      config.value = fallbackConfig as SiteConfig
+      content.value = fallbackContent as unknown as SiteContent
+      seo.value = fallbackSeo as SeoConfig
+      tracking.value = fallbackTracking as TrackingConfig
+      applyColorVars(config.value)
+      applyFonts(config.value)
       error.value = (e as Error).message
     } finally {
       loading.value = false
