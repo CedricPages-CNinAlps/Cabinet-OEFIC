@@ -191,6 +191,16 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
    Responsive Mobile
    =========================== */
 @media (max-width: 768px) {
+  .navbar__logo {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .navbar--scrolled .navbar__logo {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .navbar__burger {
     display: flex;
   }
