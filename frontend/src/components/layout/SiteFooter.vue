@@ -329,6 +329,10 @@ const hasLegalNumbers = computed(() => {
     gap: 0.3rem;
     text-align: center;
   }
+
+  .footer__legal-numbers-title {
+    flex: 0 0 auto;
+  }
 }
 
 @media (max-width: 580px) {
