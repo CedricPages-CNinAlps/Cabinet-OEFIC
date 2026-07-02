@@ -324,6 +324,7 @@ const hasLegalNumbers = computed(() => {
 
   .footer__legal-numbers {
     flex-direction: column;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 0.3rem;
     text-align: center;
@@ -334,6 +335,14 @@ const hasLegalNumbers = computed(() => {
   .footer__main {
     grid-template-columns: 1fr;
     padding-top: 3rem;
+  }
+
+  .footer__col {
+    text-align: center;
+  }
+
+  .footer__col ul {
+    align-items: center;
   }
 
   .footer__bottom-inner {
