@@ -49,7 +49,8 @@ router.post('/upload', requireAuth, upload.single('file'), (req: Request, res: R
     return;
   }
   const store = readStore<MediaStore>('media', { files: [] });
-  const apiUrl = process.env.API_URL || `http://localhost:${process.env.PORT || 3001}`;
+  // URL relative par défaut : servie par le proxy Vite en dev et par nginx en prod
+  const apiUrl = process.env.API_URL || '';
   const mediaFile: MediaFile = {
     id: generateId(),
     filename: req.file.filename,

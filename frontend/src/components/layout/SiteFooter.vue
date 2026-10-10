@@ -23,30 +23,28 @@
       </div>
 
       <div class="footer__col">
-        <h4>Navigation</h4>
+        <h4>{{ footer?.navTitle }}</h4>
         <ul>
-          <li v-for="link in footer?.quickLinks" :key="link.label">
+          <li v-for="link in content?.nav?.links" :key="link.label + link.href">
             <a :href="link.href">{{ link.label }}</a>
           </li>
         </ul>
       </div>
 
       <div class="footer__col">
-        <h4>Nos services</h4>
+        <h4>{{ footer?.servicesTitle }}</h4>
         <ul>
-          <li><a href="#services">Gestion de Patrimoine</a></li>
-          <li><a href="#services">Conseil Financier</a></li>
-          <li><a href="#services">Assurances Vie & Retraite</a></li>
-          <li><a href="#services">Banque & Crédit</a></li>
-          <li><a href="#services">Levée de Fonds</a></li>
+          <li v-for="svc in footerServices" :key="svc.id">
+            <a :href="svc.link || '#services'">{{ svc.title }}</a>
+          </li>
         </ul>
       </div>
 
       <div class="footer__col">
-        <h4>Contact</h4>
+        <h4>{{ footer?.contactTitle }}</h4>
         <ul>
           <li v-if="config?.legalInfo?.phone">
-            <a :href="`tel:${config.legalInfo.phone}`">{{ config.legalInfo.phone }}</a>
+            <a :href="telHref(config.legalInfo.phone)">{{ config.legalInfo.phone }}</a>
           </li>
           <li v-if="config?.legalInfo?.email">
             <a :href="`mailto:${config.legalInfo.email}`">{{ config.legalInfo.email }}</a>
@@ -62,12 +60,19 @@
       <!-- Numéros réglementaires -->
       <div v-if="hasLegalNumbers" class="footer__legal-numbers">
         <h4 v-if="footer?.legalNumbersTitle" class="footer__legal-numbers-title">{{ footer.legalNumbersTitle }}</h4>
-        <span v-if="config?.legalInfo?.orias">N° ORIAS : {{ config.legalInfo.orias }}</span>
-        <span v-if="config?.legalInfo?.cif">N° CIF : {{ config.legalInfo.cif }}</span>
-        <span v-if="config?.legalInfo?.carteT">Carte T : {{ config.legalInfo.carteT }}</span>
-        <span v-if="config?.legalInfo?.rcPro">RC Pro : {{ config.legalInfo.rcPro }}</span>
-        <span v-if="config?.legalInfo?.tvaIntra">TVA : {{ config.legalInfo.tvaIntra }}</span>
-        <span v-if="config?.legalInfo?.siret">SIRET : {{ config.legalInfo.siret }}</span>
+        <span v-if="config?.legalInfo?.orias">Immatriculé à l'ORIAS (www.orias.fr) sous le n° {{ config.legalInfo.orias }}</span>
+        <span v-if="config?.legalInfo?.cif">
+          Conseiller en Investissements Financiers (CIF) n° {{ config.legalInfo.cif }}<template v-if="config.legalInfo.cifAssociation">, adhérent de {{ config.legalInfo.cifAssociation }}</template>, association agréée par l'AMF
+        </span>
+        <span v-if="config?.legalInfo?.coa">{{ config.legalInfo.coa }} — sous le contrôle de l'ACPR</span>
+        <span v-if="config?.legalInfo?.iobsp">{{ config.legalInfo.iobsp }} — sous le contrôle de l'ACPR</span>
+        <span v-if="config?.legalInfo?.carteT">Carte professionnelle T (transaction immobilière) n° {{ config.legalInfo.carteT }}</span>
+        <span v-if="config?.legalInfo?.rcPro">
+          RC Professionnelle et garantie financière n° {{ config.legalInfo.rcPro }}<template v-if="config.legalInfo.rcProInsurer"> — {{ config.legalInfo.rcProInsurer }}</template>
+        </span>
+        <span v-if="config?.legalInfo?.mediator">Médiateur de la consommation : {{ config.legalInfo.mediator }}</span>
+        <span v-if="config?.legalInfo?.siret">SIRET : {{ config.legalInfo.siret }}<template v-if="config.legalInfo.rcs"> — {{ config.legalInfo.rcs }}</template></span>
+        <span v-if="config?.legalInfo?.tvaIntra">TVA intracommunautaire : {{ config.legalInfo.tvaIntra }}</span>
       </div>
     </div>
 
@@ -82,8 +87,11 @@
             :href="link.href"
           >{{ link.label }}</a>
           <button id="tarteaucitronPersonalize2" class="footer__cookie-btn">
-            Gestion des cookies
+            {{ footer?.cookiesText || 'Gestion des cookies' }}
           </button>
+          <RouterLink :to="{ name: 'admin-login' }" class="footer__admin" title="Administration" aria-label="Administration">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          </RouterLink>
         </div>
       </div>
     </div>
@@ -95,9 +103,17 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSiteConfigStore } from '@/stores/siteConfig'
 import { resolveAssetUrl } from '@/utils/asset'
+import { telHref } from '@/utils/contact'
 
-const { config, content } = storeToRefs(useSiteConfigStore())
+const { displayConfig: config, displayContent: content } = storeToRefs(useSiteConfigStore())
 const footer = computed(() => content.value?.footer)
+
+const footerServices = computed(() =>
+  (content.value?.services ?? [])
+    .filter(s => s.visible)
+    .sort((a, b) => a.order - b.order)
+    .slice(0, 6)
+)
 
 const currentYear = new Date().getFullYear()
 
@@ -132,7 +148,7 @@ const copyrightHtml = computed(() => {
 
 const hasLegalNumbers = computed(() => {
   const l = config.value?.legalInfo
-  return l && (l.orias || l.cif || l.carteT || l.rcPro || l.tvaIntra || l.siret)
+  return l && (l.orias || l.cif || l.coa || l.iobsp || l.carteT || l.rcPro || l.mediator || l.tvaIntra || l.siret)
 })
 </script>
 
@@ -259,6 +275,7 @@ const hasLegalNumbers = computed(() => {
   font-family: var(--font-body, 'Inter', sans-serif);
   font-size: 0.75rem;
   color: #ffffff;
+  text-align: center;
 }
 
 /* Bottom */
@@ -310,6 +327,27 @@ const hasLegalNumbers = computed(() => {
 .footer__cookie-btn:hover {
   color: var(--color-gold);
   opacity: 1;
+}
+
+/* Accès discret au backoffice */
+.footer__admin {
+  display: inline-flex;
+  align-items: center;
+  color: var(--footer-text, rgba(255, 255, 255, 0.7));
+  opacity: 0.25;
+  transition: opacity 0.2s ease, color 0.2s ease, transform 0.4s ease;
+}
+
+.footer__admin svg {
+  width: 13px;
+  height: 13px;
+}
+
+.footer__admin:hover,
+.footer__admin:focus-visible {
+  opacity: 1;
+  color: var(--color-gold);
+  transform: rotate(90deg);
 }
 
 @media (max-width: 900px) {

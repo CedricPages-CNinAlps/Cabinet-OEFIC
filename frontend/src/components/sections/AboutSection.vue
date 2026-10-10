@@ -4,7 +4,7 @@
       <div class="about__grid">
         <!-- Texte -->
         <div class="about__text" ref="textRef">
-          <span class="eyebrow">Notre histoire</span>
+          <span v-if="about?.eyebrow" class="eyebrow">{{ about.eyebrow }}</span>
           <h2>{{ about?.title }}</h2>
           <div class="divider-gold" style="margin: 1.5rem 0"></div>
           <p v-for="(para, i) in paragraphs" :key="i" class="about__para">{{ para }}</p>
@@ -35,7 +35,7 @@
             <div v-else class="about__img-placeholder">
               <div class="about__img-overlay">
                 <strong>{{ about?.placeholderTitle || 'Cabinet OEFIC' }}</strong>
-                <span>{{ about?.placeholderSubtitle || 'Depuis 1984' }}</span>
+                <span>{{ about?.placeholderSubtitle || 'Depuis 1987' }}</span>
               </div>
             </div>
             <!-- Badge flottant -->
@@ -56,7 +56,7 @@ import { storeToRefs } from 'pinia'
 import { gsap } from 'gsap'
 import { useSiteConfigStore } from '@/stores/siteConfig'
 
-const { content } = storeToRefs(useSiteConfigStore())
+const { displayContent: content } = storeToRefs(useSiteConfigStore())
 const about = computed(() => content.value?.about)
 
 const sectionRef = ref<HTMLElement | null>(null)

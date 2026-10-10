@@ -8,12 +8,15 @@
 
       <!-- Nav Links (desktop) -->
       <nav class="navbar__nav" :class="{ 'navbar__nav--open': menuOpen }">
-        <a href="#services" class="navbar__link" @click="closeMenu">Nos services</a>
-        <a href="#about" class="navbar__link" @click="closeMenu">À propos</a>
-        <a href="#stats" class="navbar__link" @click="closeMenu">Chiffres clés</a>
-        <a href="#contact" class="navbar__link" @click="closeMenu">Contact</a>
-        <a href="#contact" class="btn btn-primary navbar__cta" @click="closeMenu">
-          Prendre rendez-vous
+        <a
+          v-for="link in nav?.links"
+          :key="link.label + link.href"
+          :href="link.href"
+          class="navbar__link"
+          @click="closeMenu"
+        >{{ link.label }}</a>
+        <a v-if="nav?.ctaText" :href="nav.ctaLink || '#contact'" class="btn btn-primary navbar__cta" @click="closeMenu">
+          {{ nav.ctaText }}
         </a>
       </nav>
 
@@ -33,12 +36,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSiteConfigStore } from '@/stores/siteConfig'
 import { resolveAssetUrl } from '@/utils/asset'
 
-const { config } = storeToRefs(useSiteConfigStore())
+const { displayConfig: config, displayContent: content } = storeToRefs(useSiteConfigStore())
+const nav = computed(() => content.value?.nav)
 
 const isScrolled = ref(false)
 const menuOpen = ref(false)

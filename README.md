@@ -45,7 +45,9 @@ npm run dev
 
 ### Backoffice
 
-Accès : `http://localhost:5173/admin`
+Accès : `http://localhost:5173/Cabinet-OEFIC/admin`
+
+Voir aussi la fiche de synthèse : [docs/SYNTHESE.md](docs/SYNTHESE.md) (liens, accès, déploiement, contenu).
 
 Mot de passe initial : `oefic2024` (à changer immédiatement dans le backoffice)
 

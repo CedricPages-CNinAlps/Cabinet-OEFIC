@@ -2,8 +2,8 @@
   <section class="contact section" :style="sectionBg">
     <div class="container">
       <div class="section-header">
-        <span class="eyebrow">Nous contacter</span>
-        <h2>{{ contact?.title || 'Prenons contact' }}</h2>
+        <span v-if="contact?.eyebrow" class="eyebrow">{{ contact.eyebrow }}</span>
+        <h2>{{ contact?.title }}</h2>
         <div class="divider-gold"></div>
         <p>{{ contact?.subtitle }}</p>
       </div>
@@ -14,59 +14,55 @@
           <form class="contact__form" @submit.prevent="sendEmail" novalidate>
             <div class="form-row">
               <div class="form-group">
-                <label for="from_name">Nom complet *</label>
+                <label for="from_name">{{ t.nameLabel }} *</label>
                 <input
                   id="from_name"
                   v-model="form.from_name"
                   type="text"
                   class="form-control"
-                  placeholder="Jean Dupont"
+                  :placeholder="t.namePlaceholder"
                   required
                 />
               </div>
               <div class="form-group">
-                <label for="reply_to">Email *</label>
+                <label for="reply_to">{{ t.emailLabel }} *</label>
                 <input
                   id="reply_to"
                   v-model="form.reply_to"
                   type="email"
                   class="form-control"
-                  placeholder="jean@exemple.fr"
+                  :placeholder="t.emailPlaceholder"
                   required
                 />
               </div>
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label for="phone">Téléphone</label>
+                <label for="phone">{{ t.phoneLabel }}</label>
                 <input
                   id="phone"
                   v-model="form.phone"
                   type="tel"
                   class="form-control"
-                  placeholder="06 12 34 56 78"
+                  :placeholder="t.phonePlaceholder"
                 />
               </div>
               <div class="form-group">
-                <label for="subject">Sujet *</label>
+                <label for="subject">{{ t.subjectLabel }} *</label>
                 <select id="subject" v-model="form.subject" class="form-control" required>
-                  <option value="">Choisissez un sujet</option>
-                  <option>Gestion de patrimoine</option>
-                  <option>Conseil financier</option>
-                  <option>Assurance vie / Retraite</option>
-                  <option>Crédit / Financement</option>
-                  <option>Levée de fonds</option>
-                  <option>Autre</option>
+                  <option value="">{{ t.subjectPlaceholder }}</option>
+                  <option v-for="title in subjects" :key="title">{{ title }}</option>
+                  <option v-if="t.otherSubject">{{ t.otherSubject }}</option>
                 </select>
               </div>
             </div>
             <div class="form-group">
-              <label for="message">Message *</label>
+              <label for="message">{{ t.messageLabel }} *</label>
               <textarea
                 id="message"
                 v-model="form.message"
                 class="form-control"
-                placeholder="Décrivez votre projet ou votre demande..."
+                :placeholder="t.messagePlaceholder"
                 rows="5"
                 required
               ></textarea>
@@ -80,8 +76,8 @@
               <svg v-if="!sending" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
               </svg>
-              <span v-if="sending">Envoi en cours...</span>
-              <span v-else>Envoyer le message</span>
+              <span v-if="sending">{{ t.sendingText }}</span>
+              <span v-else>{{ t.submitText }}</span>
             </button>
           </form>
         </div>
@@ -89,19 +85,19 @@
         <!-- Infos contact -->
         <div class="contact__info">
           <div class="contact__card">
-            <h3>Nos coordonnées</h3>
-            <div class="contact__detail" v-if="contact?.phone">
+            <h3 v-if="contact?.cardTitle">{{ contact.cardTitle }}</h3>
+            <div class="contact__detail" v-if="phone">
               <div class="contact__detail-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
                   <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.9a19.79 19.79 0 01-3-8.57A2 2 0 012.18 1H5.2a2 2 0 012 1.72c.127.96.36 1.903.7 2.81a2 2 0 01-.45 2.11L6.3 8.77a16 16 0 006.6 6.6l1.14-1.14a2 2 0 012.11-.45c.907.34 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
                 </svg>
               </div>
               <div>
-                <strong>Téléphone</strong>
-                <a :href="`tel:${contact.phone}`">{{ contact.phone }}</a>
+                <strong>{{ t.phoneLabel }}</strong>
+                <a :href="telHref(phone)">{{ phone }}</a>
               </div>
             </div>
-            <div class="contact__detail" v-if="contact?.email">
+            <div class="contact__detail" v-if="email">
               <div class="contact__detail-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -109,11 +105,11 @@
                 </svg>
               </div>
               <div>
-                <strong>Email</strong>
-                <a :href="`mailto:${contact.email}`">{{ contact.email }}</a>
+                <strong>{{ t.emailLabel }}</strong>
+                <a :href="`mailto:${email}`">{{ email }}</a>
               </div>
             </div>
-            <div class="contact__detail" v-if="contact?.address">
+            <div class="contact__detail" v-if="address">
               <div class="contact__detail-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
@@ -121,15 +117,14 @@
                 </svg>
               </div>
               <div>
-                <strong>Adresse</strong>
-                <span>{{ contact.address }}</span>
+                <strong>{{ contact?.addressLabel }}</strong>
+                <span>{{ address }}</span>
               </div>
             </div>
 
-            <div class="contact__hours">
-              <h4>Horaires d'ouverture</h4>
-              <p>Lundi — Vendredi : 9h00 — 18h00</p>
-              <p>Sur rendez-vous uniquement</p>
+            <div v-if="hoursLines.length" class="contact__hours">
+              <h4 v-if="contact?.hoursTitle">{{ contact.hoursTitle }}</h4>
+              <p v-for="(line, i) in hoursLines" :key="i">{{ line }}</p>
             </div>
           </div>
         </div>
@@ -143,9 +138,30 @@ import { ref, computed, reactive } from 'vue'
 import { storeToRefs } from 'pinia'
 import emailjs from '@emailjs/browser'
 import { useSiteConfigStore } from '@/stores/siteConfig'
+import { telHref } from '@/utils/contact'
 
-const { content } = storeToRefs(useSiteConfigStore())
+const { displayContent: content, displayConfig: config } = storeToRefs(useSiteConfigStore())
 const contact = computed(() => content.value?.contact)
+const t = computed(() => contact.value?.form ?? ({} as NonNullable<typeof contact.value>['form']))
+
+// Coordonnées : source unique = onglet Configuration
+const legal = computed(() => config.value?.legalInfo)
+const phone = computed(() => legal.value?.phone || '')
+const email = computed(() => legal.value?.email || '')
+const address = computed(() =>
+  [legal.value?.address, legal.value?.city].filter(Boolean).join(', ')
+)
+const hoursLines = computed(() =>
+  (contact.value?.hours || '').split('\n').map(l => l.trim()).filter(Boolean)
+)
+
+// Sujets du formulaire = expertises visibles (gérées depuis le backoffice)
+const subjects = computed(() =>
+  (content.value?.services ?? [])
+    .filter(s => s.visible)
+    .sort((a, b) => a.order - b.order)
+    .map(s => s.title)
+)
 
 const sectionBg = computed(() => {
   const bg = contact.value?.bgColor
@@ -165,14 +181,14 @@ const feedback = reactive({ message: '', type: 'success' as 'success' | 'error' 
 
 async function sendEmail() {
   if (!form.from_name || !form.reply_to || !form.subject || !form.message) {
-    feedback.message = 'Veuillez remplir tous les champs obligatoires.'
+    feedback.message = t.value.requiredMessage
     feedback.type = 'error'
     return
   }
 
   const ejs = contact.value?.emailjs
   if (!ejs?.serviceId || !ejs?.templateId || !ejs?.publicKey) {
-    feedback.message = 'Le formulaire de contact n\'est pas encore configuré. Veuillez nous contacter directement par téléphone.'
+    feedback.message = t.value.notConfiguredMessage
     feedback.type = 'error'
     return
   }
@@ -182,11 +198,11 @@ async function sendEmail() {
 
   try {
     await emailjs.send(ejs.serviceId, ejs.templateId, { ...form }, ejs.publicKey)
-    feedback.message = 'Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.'
+    feedback.message = t.value.successMessage
     feedback.type = 'success'
     Object.assign(form, { from_name: '', reply_to: '', phone: '', subject: '', message: '' })
   } catch {
-    feedback.message = 'Une erreur s\'est produite. Veuillez réessayer ou nous contacter directement.'
+    feedback.message = t.value.errorMessage
     feedback.type = 'error'
   } finally {
     sending.value = false

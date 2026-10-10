@@ -2,10 +2,12 @@
   <section class="services section" :style="sectionBg">
     <div class="container">
       <div class="section-header">
-        <span class="eyebrow">Nos domaines d'expertise</span>
-        <h2>Des solutions complètes<br />pour votre patrimoine</h2>
+        <span v-if="header?.eyebrow" class="eyebrow">{{ header.eyebrow }}</span>
+        <h2>
+          <template v-for="(line, i) in titleLines" :key="i"><br v-if="i > 0" />{{ line }}</template>
+        </h2>
         <div class="divider-gold"></div>
-        <p>Depuis 40 ans, nous mettons notre expertise à votre service avec une approche indépendante et personnalisée.</p>
+        <p v-if="header?.intro">{{ header.intro }}</p>
       </div>
 
       <div class="services__grid">
@@ -22,7 +24,7 @@
           <h3 class="service-card__title">{{ service.title }}</h3>
           <p class="service-card__desc">{{ service.description }}</p>
           <span class="service-card__cta">
-            En savoir plus
+            {{ header?.cardCta || 'En savoir plus' }}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
@@ -38,7 +40,9 @@ import { computed, defineComponent, h } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSiteConfigStore } from '@/stores/siteConfig'
 
-const { content } = storeToRefs(useSiteConfigStore())
+const { displayContent: content } = storeToRefs(useSiteConfigStore())
+const header = computed(() => content.value?.servicesHeader)
+const titleLines = computed(() => (header.value?.title || '').split('\n'))
 
 const visibleServices = computed(() =>
   (content.value?.services ?? [])
@@ -71,6 +75,8 @@ const icons: Record<string, string> = {
   // — Transmission & Entreprise —
   succession:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>`,
   entreprise:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>`,
+  familyoffice:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="9" r="2"/><circle cx="19" cy="9" r="2"/><path d="M8.5 21v-4.5a3.5 3.5 0 017 0V21"/><path d="M2 21v-3a3 3 0 015.2-2"/><path d="M22 21v-3a3 3 0 00-5.2-2"/><path d="M12 10v3"/></svg>`,
+  gouvernance:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="5" r="2"/><circle cx="20" cy="5" r="2"/><circle cx="4" cy="19" r="2"/><circle cx="20" cy="19" r="2"/><path d="M5.5 6.5l4.3 3.7M18.5 6.5l-4.3 3.7M5.5 17.5l4.3-3.7M18.5 17.5l-4.3-3.7"/></svg>`,
   fonds:          `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>`,
   conseil:        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`,
   audit:          `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>`,

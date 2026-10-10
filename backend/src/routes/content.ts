@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { readStore, writeStore } from '../services/storageService.js';
 import { requireAuth } from '../middleware/authMiddleware.js';
-import type { SiteContent, Service } from '../types/index.js';
+import type { SiteContent, Service, LogoSlider } from '../types/index.js';
 
 const router = Router();
 
@@ -9,148 +9,453 @@ function generateId(): string {
   return Math.random().toString(36).slice(2, 10);
 }
 
+// Valeurs par défaut — miroir de frontend/src/data/content.json (snapshot statique GitHub Pages)
 const defaultContent: SiteContent = {
-  hero: {
-    title: '40 ans d\'expertise\nau service de votre patrimoine',
-    subtitle: 'Cabinet OEFIC vous accompagne dans la gestion, la protection et le développement de votre patrimoine avec une approche personnalisée et indépendante.',
-    cta1Text: 'Prendre rendez-vous',
-    cta1Link: '#contact',
-    cta2Text: 'Nos services',
-    cta2Link: '#services',
-    bgColor: ''
+  "nav": {
+    "links": [
+      {
+        "label": "Nos expertises",
+        "href": "#services"
+      },
+      {
+        "label": "Family Office",
+        "href": "#family-office"
+      },
+      {
+        "label": "Le cabinet",
+        "href": "#about"
+      },
+      {
+        "label": "Contact",
+        "href": "#contact"
+      }
+    ],
+    "ctaText": "Prendre rendez-vous",
+    "ctaLink": "#contact"
   },
-  services: [
+  "hero": {
+    "title": "Gestion de patrimoine\n& Family Office",
+    "subtitle": "Depuis {annee_creation}, le {nom_cabinet}, conseil indépendant, accompagne familles, dirigeants et investisseurs dans la structuration, la protection, la valorisation et la transmission de leur patrimoine privé et professionnel.",
+    "cta1Text": "Prendre rendez-vous",
+    "cta1Link": "#contact",
+    "cta2Text": "Nos expertises",
+    "cta2Link": "#services",
+    "bgColor": "",
+    "badgeText": "Depuis {annee_creation}",
+    "scrollText": "Découvrir",
+    "quickStats": [
+      {
+        "statId": "unh6lzbb",
+        "label": "ans"
+      },
+      {
+        "statId": "xoboj3ov",
+        "label": "clients"
+      },
+      {
+        "statId": "4dbhoat5",
+        "label": "expertises"
+      }
+    ]
+  },
+  "services": [
     {
-      id: generateId(),
-      title: 'Gestion de Patrimoine',
-      description: 'Optimisation et valorisation de votre patrimoine financier et immobilier avec une stratégie sur mesure adaptée à vos objectifs de vie.',
-      icon: 'patrimoine',
-      bgColor: '',
-      link: '#contact',
-      order: 1,
-      visible: true
+      "id": "x4nahefg",
+      "title": "Bilan & Stratégie patrimoniale",
+      "description": "Bilan patrimonial global et vision à 360° de votre situation familiale, professionnelle et fiscale, pour définir une stratégie sur mesure alignée sur vos objectifs de vie.",
+      "icon": "audit",
+      "bgColor": "",
+      "link": "#contact",
+      "order": 1,
+      "visible": true
     },
     {
-      id: generateId(),
-      title: 'Conseil en Investissements Financiers',
-      description: 'Analyse approfondie des marchés et sélection rigoureuse des supports d\'investissement pour optimiser vos rendements selon votre profil de risque.',
-      icon: 'investissement',
-      bgColor: '',
-      link: '#contact',
-      order: 2,
-      visible: true
+      "id": "fo7k2m9q",
+      "title": "Family Office",
+      "description": "Pilotage global et consolidé du patrimoine familial : reporting, gouvernance familiale, coordination de vos experts et accompagnement multigénérationnel, avec un interlocuteur unique.",
+      "icon": "familyoffice",
+      "bgColor": "",
+      "link": "#family-office",
+      "order": 2,
+      "visible": true
     },
     {
-      id: generateId(),
-      title: 'Assurances Vie & Retraite',
-      description: 'Solutions d\'assurance vie, prévoyance et retraite adaptées pour protéger vos proches et préparer sereinement votre avenir.',
-      icon: 'assurance',
-      bgColor: '',
-      link: '#contact',
-      order: 3,
-      visible: true
+      "id": "viuq3o9r",
+      "title": "Conseil en Investissements Financiers",
+      "description": "Allocation d'actifs adaptée à votre profil de risque et à votre horizon : sélection indépendante des enveloppes (assurance-vie, contrat de capitalisation, PEA, compte-titres, PER) et des supports (ETF, SCPI, private equity, produits structurés).",
+      "icon": "investissement",
+      "bgColor": "",
+      "link": "#contact",
+      "order": 3,
+      "visible": true
     },
     {
-      id: generateId(),
-      title: 'Intermédiaire en Banque et Crédit',
-      description: 'Accompagnement dans vos opérations de financement, restructuration de dettes et optimisation de vos conditions bancaires.',
-      icon: 'banque',
-      bgColor: '',
-      link: '#contact',
-      order: 4,
-      visible: true
+      "id": "bdugr6sm",
+      "title": "Retraite & Prévoyance",
+      "description": "Bilan retraite, Plan d'Épargne Retraite (PER), assurance-vie, prévoyance du dirigeant, garantie homme-clé et assurance emprunteur pour préparer l'avenir et protéger vos proches.",
+      "icon": "retraite",
+      "bgColor": "",
+      "link": "#contact",
+      "order": 4,
+      "visible": true
     },
     {
-      id: generateId(),
-      title: 'Levée de Fonds',
-      description: 'Accompagnement stratégique pour structurer et réussir vos levées de fonds, des premières réflexions jusqu\'à la signature.',
-      icon: 'fonds',
-      bgColor: '',
-      link: '#contact',
-      order: 5,
-      visible: true
+      "id": "tr5n8sx1",
+      "title": "Transmission & Succession",
+      "description": "Anticipation et organisation de la transmission : donations, démembrement de propriété, clause bénéficiaire, Pacte Dutreil, protection du conjoint et mandat de protection future.",
+      "icon": "succession",
+      "bgColor": "",
+      "link": "#contact",
+      "order": 5,
+      "visible": true
+    },
+    {
+      "id": "dg3h6w0e",
+      "title": "Ingénierie patrimoniale du dirigeant",
+      "description": "Structuration du patrimoine professionnel : holding, SCI, rémunération du dirigeant, cession d'entreprise, apport-cession (150-0 B ter) et réinvestissement du produit de cession.",
+      "icon": "entreprise",
+      "bgColor": "",
+      "link": "#contact",
+      "order": 6,
+      "visible": true
+    },
+    {
+      "id": "d7mvurfs3o9",
+      "title": "Optimisation fiscale",
+      "description": "Intégration de la fiscalité dans chaque décision patrimoniale : impôt sur le revenu, IFI, plus-values, arbitrage IR/IS et dispositifs de réduction d'impôt, dans le strict respect du cadre légal.",
+      "icon": "fiscalite",
+      "bgColor": "",
+      "link": "#contact",
+      "order": 7,
+      "visible": true
+    },
+    {
+      "id": "im4p9vz2",
+      "title": "Immobilier patrimonial",
+      "description": "Investissement immobilier locatif, LMNP, SCPI, déficit foncier, Malraux et Monuments Historiques : sélection et accompagnement dans vos opérations de transaction immobilière (Carte T).",
+      "icon": "immobilier",
+      "bgColor": "",
+      "link": "#contact",
+      "order": 8,
+      "visible": true
+    },
+    {
+      "id": "zd8pe4t4",
+      "title": "Financement & Courtage en crédit",
+      "description": "En tant qu'intermédiaire en opérations de banque (IOBSP) : recherche de financements immobiliers et professionnels, restructuration de dettes, crédit lombard et négociation de vos conditions bancaires.",
+      "icon": "banque",
+      "bgColor": "",
+      "link": "#contact",
+      "order": 9,
+      "visible": true
+    },
+    {
+      "id": "0icz647p",
+      "title": "Levée de Fonds",
+      "description": "Accompagnement stratégique des entreprises pour structurer et réussir leurs levées de fonds, de la préparation du dossier investisseurs jusqu'au closing.",
+      "icon": "fonds",
+      "bgColor": "",
+      "link": "#contact",
+      "order": 10,
+      "visible": true
     }
   ],
-  about: {
-    title: '40 ans d\'excellence au service de vos ambitions',
-    text: 'Fondé en 1984, le Cabinet OEFIC est un acteur indépendant reconnu dans le conseil en gestion de patrimoine. Depuis quatre décennies, nous accompagnons particuliers, chefs d\'entreprise et institutionnels dans la structuration, la protection et le développement de leur patrimoine.\n\nNotre approche repose sur une analyse globale de votre situation, une parfaite indépendance vis-à-vis des établissements financiers et un engagement total dans la durée à vos côtés.',
-    imageUrl: '',
-    bgColor: '',
-    milestones: [
-      { year: '1984', label: 'Création du Cabinet OEFIC' },
-      { year: '1995', label: 'Développement de l\'activité assurances' },
-      { year: '2005', label: 'Agrément IOBSP' },
-      { year: '2015', label: 'Expansion levée de fonds' },
-      { year: '2024', label: '40 ans d\'expertise' }
+  "servicesHeader": {
+    "eyebrow": "Nos expertises",
+    "title": "Une approche globale\nde votre patrimoine",
+    "intro": "Conseil indépendant depuis {annee_creation}, de la stratégie patrimoniale au Family Office : nous intervenons sur l'ensemble de votre patrimoine privé et professionnel.",
+    "cardCta": "En savoir plus"
+  },
+  "familyOffice": {
+    "eyebrow": "Family Office",
+    "title": "Un Family Office pour piloter l'ensemble de votre patrimoine familial",
+    "text": "Au-delà du conseil en gestion de patrimoine, le {nom_cabinet} propose un service de Family Office aux familles et aux dirigeants dont le patrimoine requiert une vision consolidée et une coordination permanente.\n\nInterlocuteur unique, nous centralisons l'information, orchestrons vos experts et veillons, génération après génération, à la cohérence de chaque décision patrimoniale.",
+    "pillars": [
+      {
+        "title": "Vision consolidée & reporting",
+        "description": "Agrégation de l'ensemble de vos actifs — financiers, immobiliers et professionnels — et reporting patrimonial consolidé, clair et régulier."
+      },
+      {
+        "title": "Coordination des experts",
+        "description": "Nous travaillons avec vos notaires, avocats, experts-comptables et banquiers privés, en lien avec les conseils déjà en place."
+      },
+      {
+        "title": "Gouvernance familiale",
+        "description": "Organisation des prises de décision, charte familiale, préparation et implication de la génération suivante."
+      },
+      {
+        "title": "Transmission multigénérationnelle",
+        "description": "Anticipation de la succession, donations, démembrement, Pacte Dutreil et protection du conjoint et des proches."
+      },
+      {
+        "title": "Patrimoine privé & professionnel",
+        "description": "Articulation entre patrimoine privé et professionnel : holding, cession d'entreprise et réinvestissement du produit de cession."
+      },
+      {
+        "title": "Philanthropie & engagements",
+        "description": "Structuration de vos projets philanthropiques : fonds de dotation, fondation, mécénat et investissement à impact."
+      }
+    ],
+    "stepsTitle": "Notre méthode",
+    "steps": [
+      {
+        "title": "Premier échange",
+        "description": "Un rendez-vous sans engagement pour comprendre votre situation, vos objectifs et vos priorités."
+      },
+      {
+        "title": "Bilan patrimonial",
+        "description": "Audit complet : actifs, passifs, fiscalité, protection, situation familiale et professionnelle."
+      },
+      {
+        "title": "Stratégie sur mesure",
+        "description": "Recommandations écrites et argumentées, formalisées dans une lettre de mission et un rapport de conseil."
+      },
+      {
+        "title": "Mise en œuvre",
+        "description": "Déploiement des solutions retenues avec nos partenaires et en coordination avec vos conseils."
+      },
+      {
+        "title": "Suivi dans la durée",
+        "description": "Revues régulières, reporting et ajustement de la stratégie au fil de vos projets et des évolutions réglementaires."
+      }
+    ],
+    "ctaText": "Échanger sur votre Family Office",
+    "ctaLink": "#contact",
+    "bgColor": ""
+  },
+  "about": {
+    "eyebrow": "Notre histoire",
+    "title": "{anciennete} ans d'indépendance au service de vos ambitions",
+    "text": "Fondé en {annee_creation} à Meylan, près de Grenoble, le {nom_cabinet} est un cabinet indépendant de conseil en gestion de patrimoine. Depuis plus de quatre décennies, nous accompagnons familles, chefs d'entreprise, professions libérales et investisseurs dans la structuration, la protection, la valorisation et la transmission de leur patrimoine.\n\nNotre approche repose sur quatre engagements : l'indépendance, sans lien capitalistique avec une banque ou un assureur ; une vision globale qui étudie ensemble vie privée et vie professionnelle ; des solutions sur mesure ; et une relation de confiance dans la durée, en toute transparence sur notre rémunération.\n\nAujourd'hui, notre pôle Family Office prolonge cet engagement en offrant aux familles un pilotage consolidé de leur patrimoine, en coordination avec leurs notaires, avocats et experts-comptables.",
+    "imageUrl": "",
+    "bgColor": "",
+    "milestones": [
+      {
+        "year": "{annee_creation}",
+        "label": "Création du {nom_cabinet}"
+      },
+      {
+        "year": "1995",
+        "label": "Développement de l'activité de courtage en assurance"
+      },
+      {
+        "year": "2005",
+        "label": "Immatriculation IOBSP à l'ORIAS"
+      },
+      {
+        "year": "2015",
+        "label": "Développement de l'accompagnement en levée de fonds"
+      },
+      {
+        "year": "2024",
+        "label": "40 ans d'expertise"
+      },
+      {
+        "year": "2026",
+        "label": "Lancement du pôle Family Office"
+      }
+    ],
+    "badgeValue": "{annee_creation}",
+    "badgeLabel": "année de création",
+    "placeholderTitle": "{nom_cabinet}",
+    "placeholderSubtitle": "Gestion de patrimoine & Family Office"
+  },
+  "stats": {
+    "bgColor": "#F5F5F7",
+    "stats": [
+      {
+        "id": "unh6lzbb",
+        "value": 40,
+        "suffix": "",
+        "label": "Années d'expertise",
+        "source": "anciennete"
+      },
+      {
+        "id": "xoboj3ov",
+        "value": 20,
+        "suffix": "+",
+        "label": "Familles et dirigeants accompagnés",
+        "source": ""
+      },
+      {
+        "id": "eat0rs79",
+        "value": 98,
+        "suffix": "%",
+        "label": "Taux de satisfaction",
+        "source": ""
+      },
+      {
+        "id": "4dbhoat5",
+        "value": 10,
+        "suffix": "",
+        "label": "Domaines d'expertise",
+        "source": "nb_expertises"
+      }
     ]
   },
-  stats: {
-    bgColor: '#F5F5F7',
-    stats: [
-      { id: generateId(), value: 40, suffix: ' ans', label: 'D\'expertise' },
-      { id: generateId(), value: 500, suffix: '+', label: 'Clients accompagnés' },
-      { id: generateId(), value: 98, suffix: '%', label: 'Taux de satisfaction' },
-      { id: generateId(), value: 5, suffix: '', label: 'Domaines d\'expertise' }
-    ]
-  },
-  contact: {
-    title: 'Prenons contact',
-    subtitle: 'Notre équipe est à votre disposition pour étudier votre situation et vous proposer les solutions les mieux adaptées à vos objectifs.',
-    bgColor: '',
-    emailjs: {
-      serviceId: '',
-      templateId: '',
-      publicKey: ''
+  "sliders": [
+    {
+      "id": "pf1fin",
+      "eyebrow": "Nos partenaires",
+      "title": "Partenaires financiers",
+      "subtitle": "",
+      "visible": true,
+      "mode": "continuous",
+      "speed": 30,
+      "interval": 3,
+      "reverse": false,
+      "grayscale": true,
+      "bgColor": "",
+      "logos": []
     },
-    address: '',
-    phone: '',
-    email: '',
-    googleMapsUrl: ''
+    {
+      "id": "pa2ass",
+      "eyebrow": "Nos partenaires",
+      "title": "Partenaires assureurs",
+      "subtitle": "",
+      "visible": true,
+      "mode": "continuous",
+      "speed": 30,
+      "interval": 3,
+      "reverse": true,
+      "grayscale": true,
+      "bgColor": "",
+      "logos": []
+    }
+  ],
+  "contact": {
+    "eyebrow": "Nous contacter",
+    "title": "Parlons de votre patrimoine",
+    "subtitle": "Premier échange sans engagement : notre équipe étudie votre situation et vous propose les solutions les mieux adaptées à vos objectifs patrimoniaux, professionnels et familiaux.",
+    "bgColor": "",
+    "emailjs": {
+      "serviceId": "",
+      "templateId": "",
+      "publicKey": ""
+    },
+    "googleMapsUrl": "",
+    "cardTitle": "Nos coordonnées",
+    "addressLabel": "Adresse",
+    "hoursTitle": "Horaires d'ouverture",
+    "hours": "Lundi — Vendredi : 9h00 — 18h00\nSur rendez-vous uniquement",
+    "form": {
+      "nameLabel": "Nom complet",
+      "namePlaceholder": "Jean Dupont",
+      "emailLabel": "Email",
+      "emailPlaceholder": "jean@exemple.fr",
+      "phoneLabel": "Téléphone",
+      "phonePlaceholder": "06 12 34 56 78",
+      "subjectLabel": "Sujet",
+      "subjectPlaceholder": "Choisissez un sujet",
+      "otherSubject": "Autre demande",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Décrivez votre projet ou votre demande...",
+      "submitText": "Envoyer le message",
+      "sendingText": "Envoi en cours...",
+      "successMessage": "Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.",
+      "errorMessage": "Une erreur s'est produite. Veuillez réessayer ou nous contacter directement.",
+      "requiredMessage": "Veuillez remplir tous les champs obligatoires.",
+      "notConfiguredMessage": "Le formulaire de contact n'est pas encore configuré. Veuillez nous contacter directement par téléphone."
+    }
   },
-  footer: {
-    description: 'Cabinet OEFIC — 40 ans d\'expertise indépendante en gestion de patrimoine, conseil financier et accompagnement sur mesure.',
-    quickLinks: [
-      { label: 'Nos services', href: '#services' },
-      { label: 'À propos', href: '#about' },
-      { label: 'Contact', href: '#contact' }
+  "footer": {
+    "description": "Cabinet indépendant de conseil en gestion de patrimoine et Family Office depuis {annee_creation} : stratégie patrimoniale, investissements, transmission, fiscalité, financement et accompagnement des dirigeants.",
+    "legalLinks": [
+      {
+        "label": "Mentions légales",
+        "href": "/mentions-legales"
+      },
+      {
+        "label": "Politique de confidentialité",
+        "href": "/confidentialite"
+      },
+      {
+        "label": "CGU",
+        "href": "/cgu"
+      }
     ],
-    legalLinks: [
-      { label: 'Mentions légales', href: '/mentions-legales' },
-      { label: 'Politique de confidentialité', href: '/confidentialite' },
-      { label: 'CGU', href: '/cgu' }
-    ],
-    bgColor: '#1e1a34'
+    "bgColor": "#1e1a34",
+    "textColor": "#ffffff",
+    "copyrightText": "©{annee_courante} {nom_cabinet}. Tous droits réservés. Développé par ©[Cedevium Services](https://cedevium-services.fr)",
+    "legalNumbersTitle": "Informations réglementaires",
+    "navTitle": "Navigation",
+    "servicesTitle": "Nos expertises",
+    "contactTitle": "Contact",
+    "cookiesText": "Gestion des cookies"
   },
-  sectionsOrder: ['hero', 'services', 'about', 'stats', 'contact'],
-  sectionsVisible: {
-    hero: true,
-    services: true,
-    about: true,
-    stats: true,
-    contact: true
+  "sectionsOrder": [
+    "hero",
+    "services",
+    "familyOffice",
+    "about",
+    "stats",
+    "sliders",
+    "contact"
+  ],
+  "sectionsVisible": {
+    "hero": true,
+    "services": true,
+    "familyOffice": true,
+    "about": true,
+    "stats": true,
+    "contact": true
   }
 };
 
+// Complète un contenu stocké avec les champs ajoutés depuis (sections, libellés…).
+// Les objets sont fusionnés récursivement ; tableaux et valeurs déjà enregistrés sont conservés.
+function isPlainObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
+}
+
+function mergeDefaults<T>(defaults: T, stored: unknown): T {
+  if (!isPlainObject(defaults) || !isPlainObject(stored)) {
+    return (stored === undefined ? defaults : stored) as T;
+  }
+  const out: Record<string, unknown> = { ...defaults };
+  for (const [key, value] of Object.entries(stored)) {
+    out[key] = key in defaults ? mergeDefaults((defaults as Record<string, unknown>)[key], value) : value;
+  }
+  return out as T;
+}
+
+const defaultSlider: Omit<LogoSlider, 'id'> = {
+  eyebrow: '', title: '', subtitle: '', visible: true, mode: 'continuous',
+  speed: 30, interval: 3, reverse: false, grayscale: true, bgColor: '', logos: []
+};
+
+function withDefaults(stored: SiteContent): SiteContent {
+  const raw = stored as SiteContent & { partners?: { sliders?: LogoSlider[] } };
+  // Ancien format « partners » (un seul bloc regroupant les sliders) → sliders indépendants
+  if (raw && !raw.sliders && raw.partners?.sliders) {
+    raw.sliders = raw.partners.sliders;
+  }
+  if (raw) delete raw.partners;
+  const merged = mergeDefaults(defaultContent, raw);
+  merged.sliders = merged.sliders.map(sl => ({ ...defaultSlider, ...sl }));
+  return merged;
+}
+
 router.get('/', (_req: Request, res: Response): void => {
-  res.json(readStore<SiteContent>('content', defaultContent));
+  res.json(withDefaults(readStore<SiteContent>('content', defaultContent)));
 });
 
 router.put('/', requireAuth, (req: Request, res: Response): void => {
-  const current = readStore<SiteContent>('content', defaultContent);
+  const current = withDefaults(readStore<SiteContent>('content', defaultContent));
   const updated: SiteContent = { ...current, ...(req.body as Partial<SiteContent>) };
   writeStore<SiteContent>('content', updated);
   res.json(updated);
 });
 
 router.put('/services', requireAuth, (req: Request, res: Response): void => {
-  const current = readStore<SiteContent>('content', defaultContent);
+  const current = withDefaults(readStore<SiteContent>('content', defaultContent));
   current.services = req.body as Service[];
   writeStore<SiteContent>('content', current);
   res.json(current.services);
 });
 
 router.post('/services', requireAuth, (req: Request, res: Response): void => {
-  const current = readStore<SiteContent>('content', defaultContent);
+  const current = withDefaults(readStore<SiteContent>('content', defaultContent));
   const newService: Service = {
     id: generateId(),
     order: current.services.length + 1,
@@ -163,7 +468,7 @@ router.post('/services', requireAuth, (req: Request, res: Response): void => {
 });
 
 router.delete('/services/:id', requireAuth, (req: Request, res: Response): void => {
-  const current = readStore<SiteContent>('content', defaultContent);
+  const current = withDefaults(readStore<SiteContent>('content', defaultContent));
   current.services = current.services.filter(s => s.id !== req.params.id);
   writeStore<SiteContent>('content', current);
   res.json({ success: true });

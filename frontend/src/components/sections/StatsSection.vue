@@ -26,7 +26,7 @@ import { storeToRefs } from 'pinia'
 import { gsap } from 'gsap'
 import { useSiteConfigStore } from '@/stores/siteConfig'
 
-const { content } = storeToRefs(useSiteConfigStore())
+const { displayContent: content } = storeToRefs(useSiteConfigStore())
 const stats = computed(() => content.value?.stats)
 
 const sectionRef = ref<HTMLElement | null>(null)

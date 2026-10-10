@@ -5,39 +5,57 @@ import type { SiteConfig, SeoConfig, TrackingConfig } from '../types/index.js';
 
 const router = Router();
 
+// Valeurs par défaut — miroir de frontend/src/data/config.json et seo.json
 const defaultConfig: SiteConfig = {
-  siteName: 'Cabinet OEFIC',
-  slogan: '40 ans d\'expertise au service de votre patrimoine',
-  logoUrl: '/assets/logo.png',
-  colors: {
-    bg: '#FFFFFF',
-    bgSoft: '#F5F5F7',
-    text: '#1e1a34',
-    gold: '#C9A84C',
-    goldDark: '#A8873E'
+  "siteName": "Cabinet OEFIC",
+  "slogan": "Gestion de patrimoine & Family Office depuis {annee_creation}",
+  "foundingYear": "1987",
+  "yearsOfExpertise": "40",
+  "logoUrl": "/assets/logo.png",
+  "colors": {
+    "bg": "#FFFFFF",
+    "bgSoft": "#F5F5F7",
+    "text": "#1e1a34",
+    "gold": "#C9A84C",
+    "goldDark": "#A8873E"
   },
-  fonts: {
-    heading: 'Playfair Display',
-    body: 'Inter',
-    weights: ['400', '500', '600', '700']
+  "fonts": {
+    "heading": "Parisienne",
+    "body": "Inter",
+    "weights": [
+      "400",
+      "500",
+      "600",
+      "700"
+    ]
   },
-  socialLinks: {},
-  legalInfo: {
-    orias: '',
-    siret: '',
-    address: '',
-    city: '',
-    phone: '',
-    email: ''
+  "socialLinks": {},
+  "legalInfo": {
+    "orias": "07 02 58 11",
+    "siret": "313 598 344 00064",
+    "rcs": "RCS Grenoble 313 598 344",
+    "address": "Inovallée, 29 chemin du Vieux Chêne",
+    "city": "38240 Meylan",
+    "phone": "+33 (0)4 76 90 18 77",
+    "email": "cedric.pages@oefic.com",
+    "cif": "F1035585",
+    "cifAssociation": "",
+    "coa": "Courtier en assurance (COA)",
+    "iobsp": "Intermédiaire en opérations de banque et en services de paiement (IOBSP)",
+    "carteT": "CPI6161681856",
+    "rcPro": "182.2253",
+    "rcProInsurer": "",
+    "mediator": "",
+    "tvaIntra": "FR313598344"
   }
 };
 
 const defaultSeo: SeoConfig = {
-  title: 'Cabinet OEFIC — Gestion de Patrimoine & Conseil Financier',
-  description: 'Cabinet OEFIC, 40 ans d\'expertise en gestion de patrimoine, conseil en investissements financiers, assurances vie et retraite, IOBSP et levée de fonds.',
-  keywords: 'gestion patrimoine, conseil financier, assurance vie, retraite, IOBSP, levée de fonds, cabinet conseil',
-  ogImage: '/assets/og-image.jpg',
-  canonicalUrl: 'https://cabinet-oefic.fr'
+  "title": "Cabinet OEFIC — Conseil en Gestion de Patrimoine & Family Office à Meylan (Grenoble)",
+  "description": "{nom_cabinet}, conseil indépendant en gestion de patrimoine et Family Office depuis {annee_creation} à Meylan (Grenoble) : bilan patrimonial, conseil en investissements financiers (CIF), transmission, retraite, optimisation fiscale, immobilier, financement (IOBSP) et levée de fonds.",
+  "keywords": "family office, conseil en gestion de patrimoine, CGP Grenoble, CGP Meylan, gestion de patrimoine Isère, conseiller en investissements financiers, CIF, bilan patrimonial, transmission, succession, retraite, PER, assurance-vie, optimisation fiscale, IFI, holding, dirigeant, immobilier, IOBSP, courtier, levée de fonds",
+  "ogImage": "/assets/og-image.jpg",
+  "canonicalUrl": "https://cabinet-oefic.fr"
 };
 
 const defaultTracking: TrackingConfig = {

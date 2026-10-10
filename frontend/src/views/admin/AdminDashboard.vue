@@ -19,7 +19,7 @@
     <!-- Sidebar -->
     <aside class="admin-sidebar" :class="{ 'admin-sidebar--open': sidebarOpen }">
       <div class="admin-sidebar__logo">
-        <img src="/assets/logo.png" alt="OEFIC" />
+        <img :src="resolveAssetUrl('/assets/logo.png')" alt="OEFIC" />
         <button class="admin-sidebar__close" @click="sidebarOpen = false" aria-label="Fermer">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -39,7 +39,7 @@
         </button>
       </nav>
       <div class="admin-sidebar__bottom">
-        <a href="/" target="_blank" class="admin-sidebar__preview">
+        <a :href="siteUrl" target="_blank" class="admin-sidebar__preview">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Voir le site
         </a>
@@ -72,6 +72,18 @@
         </div>
       </div>
 
+      <details v-if="['config', 'nav', 'hero', 'services', 'familyOffice', 'about', 'stats', 'sliders', 'contact', 'seo'].includes(activeTab)" class="admin-vars">
+        <summary>Variables utilisables dans tous les textes — saisies une seule fois, reprises partout</summary>
+        <p>Écrivez la variable entre accolades dans n'importe quel champ texte : elle sera remplacée sur le site.</p>
+        <ul>
+          <li v-for="v in textVarList" :key="v.key">
+            <code>{{ '{' + v.key + '}' }}</code>
+            <span>{{ v.label }}</span>
+            <em>→ {{ store.textVars[v.key] || '(vide)' }}</em>
+          </li>
+        </ul>
+      </details>
+
       <!-- ===========================
            ONGLET : Config Générale
            =========================== -->
@@ -87,7 +99,16 @@
               <label>Slogan</label>
               <input v-model="localConfig.slogan" type="text" class="form-control" />
             </div>
+            <div class="form-group">
+              <label>Année de création <code>{annee_creation}</code></label>
+              <input v-model="localConfig.foundingYear" type="text" class="form-control" placeholder="1987" />
+            </div>
+            <div class="form-group">
+              <label>Années d'expertise affichées <code>{anciennete}</code></label>
+              <input v-model="localConfig.yearsOfExpertise" type="text" class="form-control" placeholder="40" />
+            </div>
           </div>
+          <p class="admin-section-hint">Le nom du cabinet <code>{nom_cabinet}</code>, l'année de création et l'ancienneté sont repris automatiquement dans le hero, les expertises, « Le cabinet », les chiffres clés, le footer et le SEO.</p>
         </div>
 
         <div class="admin-section">
@@ -155,20 +176,44 @@
           </div>
           <div class="admin-grid-2">
             <div class="form-group">
-              <label>N° ORIAS</label>
-              <input v-model="localConfig.legalInfo.orias" type="text" class="form-control" placeholder="00 00 00 00" />
+              <label>N° d'immatriculation ORIAS</label>
+              <input v-model="localConfig.legalInfo.orias" type="text" class="form-control" placeholder="00 000 000" />
             </div>
             <div class="form-group">
-              <label>N° CIF</label>
+              <label>CIF — N° d'adhérent</label>
               <input v-model="localConfig.legalInfo.cif" type="text" class="form-control" placeholder="Conseiller en Investissements Financiers" />
             </div>
             <div class="form-group">
-              <label>N° Carte T</label>
-              <input v-model="localConfig.legalInfo.carteT" type="text" class="form-control" placeholder="Transactions immobilières" />
+              <label>CIF — Association agréée AMF</label>
+              <input v-model="localConfig.legalInfo.cifAssociation" type="text" class="form-control" placeholder="CNCGP, ANACOFI-CIF, La Compagnie des CGP…" />
             </div>
             <div class="form-group">
-              <label>N° RC Pro</label>
+              <label>Statut d'intermédiaire en assurance</label>
+              <input v-model="localConfig.legalInfo.coa" type="text" class="form-control" placeholder="Courtier en assurance (COA)" />
+            </div>
+            <div class="form-group">
+              <label>Statut IOBSP</label>
+              <input v-model="localConfig.legalInfo.iobsp" type="text" class="form-control" placeholder="Courtier en opérations de banque (COBSP)" />
+            </div>
+            <div class="form-group">
+              <label>N° Carte professionnelle T</label>
+              <input v-model="localConfig.legalInfo.carteT" type="text" class="form-control" placeholder="Transaction immobilière (CCI)" />
+            </div>
+            <div class="form-group">
+              <label>N° police RC Pro / garantie financière</label>
               <input v-model="localConfig.legalInfo.rcPro" type="text" class="form-control" placeholder="Responsabilité Civile Professionnelle" />
+            </div>
+            <div class="form-group">
+              <label>Assureur RC Pro</label>
+              <input v-model="localConfig.legalInfo.rcProInsurer" type="text" class="form-control" placeholder="Nom de l'assureur" />
+            </div>
+            <div class="form-group">
+              <label>Médiateur de la consommation</label>
+              <input v-model="localConfig.legalInfo.mediator" type="text" class="form-control" placeholder="Nom et site du médiateur" />
+            </div>
+            <div class="form-group">
+              <label>RCS</label>
+              <input v-model="localConfig.legalInfo.rcs" type="text" class="form-control" placeholder="RCS Grenoble 000 000 000" />
             </div>
             <div class="form-group">
               <label>N° TVA Intracommunautaire</label>
@@ -183,6 +228,7 @@
 
         <div class="admin-section">
           <h3>Coordonnées</h3>
+          <p class="admin-section-hint">Source unique : reprises dans la section Contact, le footer et les variables <code>{telephone}</code>, <code>{email}</code>, <code>{ville}</code>.</p>
           <div class="admin-grid-2">
             <div class="form-group">
               <label>Téléphone</label>
@@ -229,6 +275,24 @@
           <h3>Footer</h3>
           <div class="admin-grid-2">
             <div class="form-group">
+              <label>Titre colonne « Navigation »</label>
+              <input v-model="localContent.footer.navTitle" type="text" class="form-control" placeholder="Navigation" />
+            </div>
+            <div class="form-group">
+              <label>Titre colonne « Expertises »</label>
+              <input v-model="localContent.footer.servicesTitle" type="text" class="form-control" placeholder="Nos expertises" />
+            </div>
+            <div class="form-group">
+              <label>Titre colonne « Contact »</label>
+              <input v-model="localContent.footer.contactTitle" type="text" class="form-control" placeholder="Contact" />
+            </div>
+            <div class="form-group">
+              <label>Texte du lien cookies</label>
+              <input v-model="localContent.footer.cookiesText" type="text" class="form-control" placeholder="Gestion des cookies" />
+            </div>
+          </div>
+          <div class="admin-grid-2">
+            <div class="form-group">
               <label>Couleur de fond</label>
               <div class="color-picker-row">
                 <input type="color" v-model="localContent.footer.bgColor" class="color-input" />
@@ -246,7 +310,7 @@
           <div class="form-group" style="margin-top:0.75rem">
             <label>Texte de présentation</label>
             <textarea v-model="localContent.footer.description" class="form-control" rows="3"
-              placeholder="Cabinet spécialisé en gestion de patrimoine depuis 1984..."></textarea>
+              placeholder="Cabinet indépendant de conseil en gestion de patrimoine et Family Office depuis 1987..."></textarea>
           </div>
           <div class="form-group" style="margin-top:0.75rem">
             <label>Mention copyright</label>
@@ -258,16 +322,7 @@
             </p>
           </div>
 
-          <div class="admin-section__header" style="margin-top:1.25rem">
-            <label class="form-label-bold">Liens de navigation</label>
-            <button class="btn-add" @click="addQuickLink">+ Ajouter</button>
-          </div>
-          <div v-for="(link, i) in localContent.footer.quickLinks" :key="i" class="link-row">
-            <input v-model="link.label" type="text" class="form-control form-control--sm" placeholder="Libellé" />
-            <input v-model="link.href" type="text" class="form-control" placeholder="#section ou /page" />
-            <button class="btn-delete" @click="localContent.footer.quickLinks.splice(i, 1)">×</button>
-          </div>
-          <p v-if="!localContent.footer.quickLinks?.length" class="admin-empty-hint">Aucun lien. Cliquez "+ Ajouter".</p>
+          <p class="admin-section-hint" style="margin-top:1.25rem">La colonne « Navigation » reprend les liens de l'onglet <strong>Menu</strong>, la colonne « Expertises » les expertises visibles et la colonne « Contact » les coordonnées ci-dessus.</p>
 
           <div class="admin-section__header" style="margin-top:1.25rem">
             <label class="form-label-bold">Liens légaux</label>
@@ -285,6 +340,46 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
             Enregistrer
 </button>
+      </div>
+
+      <!-- ===========================
+           ONGLET : Menu
+           =========================== -->
+      <div v-if="activeTab === 'nav'" class="admin-panel">
+        <div class="admin-section">
+          <div class="admin-section__header">
+            <h3>Liens du menu</h3>
+            <button class="btn-add" @click="localContent.nav.links.push({ label: '', href: '' })">+ Ajouter</button>
+          </div>
+          <p class="admin-section-hint">Ancres disponibles : #services, #family-office, #about, #stats, #contact, et #slider-… (ancre indiquée dans l'onglet Slider).</p>
+          <draggable v-model="localContent.nav.links" :item-key="foItemKey" handle=".drag-handle">
+            <template #item="{ element: link, index: i }">
+              <div class="link-row">
+                <span class="drag-handle" title="Déplacer">⠿</span>
+                <input v-model="link.label" type="text" class="form-control form-control--sm" placeholder="Libellé" />
+                <input v-model="link.href" type="text" class="form-control" placeholder="#section ou /page" />
+                <button class="btn-delete" @click="localContent.nav.links.splice(i, 1)">×</button>
+              </div>
+            </template>
+          </draggable>
+        </div>
+        <div class="admin-section">
+          <h3>Bouton du menu</h3>
+          <div class="admin-grid-2">
+            <div class="form-group">
+              <label>Texte (vide = pas de bouton)</label>
+              <input v-model="localContent.nav.ctaText" type="text" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label>Lien</label>
+              <input v-model="localContent.nav.ctaLink" type="text" class="form-control" placeholder="#contact" />
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-save" @click="saveContent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+            Enregistrer
+          </button>
       </div>
 
       <!-- ===========================
@@ -327,6 +422,42 @@
             </div>
           </div>
         </div>
+
+        <div class="admin-section">
+          <h3>Badge et indicateur de défilement</h3>
+          <div class="admin-grid-2">
+            <div class="form-group">
+              <label>Badge au-dessus du titre (vide = masqué)</label>
+              <input v-model="localContent.hero.badgeText" type="text" class="form-control" placeholder="Depuis 1987" />
+            </div>
+            <div class="form-group">
+              <label>Texte de l'indicateur de défilement</label>
+              <input v-model="localContent.hero.scrollText" type="text" class="form-control" placeholder="Découvrir" />
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section__header">
+            <h3>Chiffres rapides sous les boutons</h3>
+            <button class="btn-add" @click="localContent.hero.quickStats.push({ statId: localContent.stats.stats[0]?.id ?? '', label: '' })">+ Ajouter</button>
+          </div>
+          <p class="admin-section-hint">Les valeurs viennent de l'onglet <strong>Statistiques</strong> : modifiez-les là-bas, elles seront mises à jour ici aussi.</p>
+          <draggable v-model="localContent.hero.quickStats" :item-key="foItemKey" handle=".drag-handle">
+            <template #item="{ element: qs, index: i }">
+              <div class="link-row">
+                <span class="drag-handle" title="Déplacer">⠿</span>
+                <select v-model="qs.statId" class="form-control">
+                  <option v-for="st in localContent.stats.stats" :key="st.id" :value="st.id">
+                    {{ statPreview(st) }} — {{ st.label }}
+                  </option>
+                </select>
+                <input v-model="qs.label" type="text" class="form-control form-control--sm" placeholder="Libellé court" />
+                <button class="btn-delete" @click="localContent.hero.quickStats.splice(i, 1)">×</button>
+              </div>
+            </template>
+          </draggable>
+        </div>
         <button class="btn btn-primary btn-save" @click="saveContent">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
             Enregistrer
@@ -338,9 +469,30 @@
            =========================== -->
       <div v-if="activeTab === 'services'" class="admin-panel">
         <div class="admin-section">
+          <h3>En-tête de la section</h3>
+          <div class="admin-grid-2">
+            <div class="form-group">
+              <label>Sur-titre</label>
+              <input v-model="localContent.servicesHeader.eyebrow" type="text" class="form-control" placeholder="Nos expertises" />
+            </div>
+            <div class="form-group">
+              <label>Texte du lien des cartes</label>
+              <input v-model="localContent.servicesHeader.cardCta" type="text" class="form-control" placeholder="En savoir plus" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Titre (un retour à la ligne = saut de ligne)</label>
+            <textarea v-model="localContent.servicesHeader.title" class="form-control" rows="2"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Introduction</label>
+            <textarea v-model="localContent.servicesHeader.intro" class="form-control" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="admin-section">
           <div class="admin-section__header">
-            <h3>Services ({{ localContent.services.length }})</h3>
-            <button class="btn-add" @click="addService">+ Ajouter un service</button>
+            <h3>Expertises ({{ localContent.services.length }})</h3>
+            <button class="btn-add" @click="addService">+ Ajouter une expertise</button>
           </div>
           <draggable
             v-model="localContent.services"
@@ -352,7 +504,7 @@
               <div class="service-editor">
                 <div class="service-editor__header">
                   <span class="drag-handle" title="Déplacer">⠿</span>
-                  <span class="service-editor__num">Service {{ i + 1 }}</span>
+                  <span class="service-editor__num">Expertise {{ i + 1 }}</span>
                   <label class="toggle">
                     <input type="checkbox" v-model="svc.visible" />
                     <span>Visible</span>
@@ -393,6 +545,8 @@
                       <optgroup label="Transmission & Entreprise">
                         <option value="succession">👥 Succession & Transmission</option>
                         <option value="entreprise">🏢 Gestion d'Entreprise</option>
+                        <option value="familyoffice">👪 Family Office</option>
+                        <option value="gouvernance">🔗 Gouvernance familiale</option>
                         <option value="fonds">💰 Levée de Fonds</option>
                         <option value="conseil">💬 Conseil</option>
                         <option value="audit">✔ Audit & Bilan</option>
@@ -417,7 +571,7 @@
                     </div>
                   </div>
                   <div class="form-group">
-                    <label>Lien (optionnel)</label>
+                    <label>Lien (optionnel, ex. #contact ou #family-office)</label>
                     <input v-model="svc.link" type="text" class="form-control" placeholder="#contact" />
                   </div>
                 </div>
@@ -432,11 +586,121 @@
       </div>
 
       <!-- ===========================
+           ONGLET : Family Office
+           =========================== -->
+      <div v-if="activeTab === 'familyOffice'" class="admin-panel">
+        <div class="admin-section">
+          <div class="admin-section__header">
+            <h3>Section Family Office</h3>
+            <label class="toggle">
+              <input type="checkbox" v-model="localContent.sectionsVisible.familyOffice" />
+              <span>Afficher sur le site</span>
+            </label>
+          </div>
+          <div class="admin-grid-2">
+            <div class="form-group">
+              <label>Sur-titre</label>
+              <input v-model="localContent.familyOffice.eyebrow" type="text" class="form-control" placeholder="Family Office" />
+            </div>
+            <div class="form-group">
+              <label>Couleur de fond (vide = bleu nuit)</label>
+              <div class="color-picker-row">
+                <input type="color" v-model="localContent.familyOffice.bgColor" class="color-input" />
+                <input type="text" v-model="localContent.familyOffice.bgColor" class="form-control form-control--sm" placeholder="vide = défaut" />
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Titre</label>
+            <input v-model="localContent.familyOffice.title" type="text" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label>Texte d'introduction (séparez les paragraphes par une ligne vide)</label>
+            <textarea v-model="localContent.familyOffice.text" class="form-control" rows="6"></textarea>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section__header">
+            <h3>Piliers ({{ localContent.familyOffice.pillars.length }})</h3>
+            <button class="btn-add" @click="localContent.familyOffice.pillars.push({ title: '', description: '' })">+ Ajouter</button>
+          </div>
+          <draggable
+            v-model="localContent.familyOffice.pillars"
+            :item-key="foItemKey"
+            handle=".drag-handle"
+          >
+            <template #item="{ element: item, index: i }">
+              <div class="fo-item-editor">
+                <div class="milestone-row">
+                  <span class="drag-handle" title="Déplacer">⠿</span>
+                  <span class="service-editor__num">Pilier {{ i + 1 }}</span>
+                  <input v-model="item.title" type="text" class="form-control" placeholder="Titre du pilier" />
+                  <button class="btn-delete" @click="localContent.familyOffice.pillars.splice(i, 1)">×</button>
+                </div>
+                <textarea v-model="item.description" class="form-control" rows="2" placeholder="Description"></textarea>
+              </div>
+            </template>
+          </draggable>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section__header">
+            <h3>Méthode — étapes ({{ localContent.familyOffice.steps.length }})</h3>
+            <button class="btn-add" @click="localContent.familyOffice.steps.push({ title: '', description: '' })">+ Ajouter</button>
+          </div>
+          <div class="form-group">
+            <label>Titre du bloc</label>
+            <input v-model="localContent.familyOffice.stepsTitle" type="text" class="form-control" placeholder="Notre méthode" />
+          </div>
+          <draggable
+            v-model="localContent.familyOffice.steps"
+            :item-key="foItemKey"
+            handle=".drag-handle"
+          >
+            <template #item="{ element: item, index: i }">
+              <div class="fo-item-editor">
+                <div class="milestone-row">
+                  <span class="drag-handle" title="Déplacer">⠿</span>
+                  <span class="service-editor__num">Étape {{ i + 1 }}</span>
+                  <input v-model="item.title" type="text" class="form-control" placeholder="Titre de l'étape" />
+                  <button class="btn-delete" @click="localContent.familyOffice.steps.splice(i, 1)">×</button>
+                </div>
+                <textarea v-model="item.description" class="form-control" rows="2" placeholder="Description"></textarea>
+              </div>
+            </template>
+          </draggable>
+        </div>
+
+        <div class="admin-section">
+          <h3>Bouton d'appel à l'action</h3>
+          <div class="admin-grid-2">
+            <div class="form-group">
+              <label>Texte (vide = pas de bouton)</label>
+              <input v-model="localContent.familyOffice.ctaText" type="text" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label>Lien</label>
+              <input v-model="localContent.familyOffice.ctaLink" type="text" class="form-control" placeholder="#contact" />
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-save" @click="saveContent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+            Enregistrer
+          </button>
+      </div>
+
+      <!-- ===========================
            ONGLET : À propos
            =========================== -->
       <div v-if="activeTab === 'about'" class="admin-panel">
         <div class="admin-section">
           <h3>Section À propos</h3>
+          <div class="form-group">
+            <label>Sur-titre</label>
+            <input v-model="localContent.about.eyebrow" type="text" class="form-control" placeholder="Notre histoire" />
+          </div>
           <div class="form-group">
             <label>Titre</label>
             <input v-model="localContent.about.title" type="text" class="form-control" />
@@ -485,7 +749,7 @@
             </div>
             <div class="form-group">
               <label>Sous-titre</label>
-              <input v-model="localContent.about.placeholderSubtitle" type="text" class="form-control" placeholder="Depuis 1984" />
+              <input v-model="localContent.about.placeholderSubtitle" type="text" class="form-control" placeholder="Depuis 1987" />
             </div>
           </div>
         </div>
@@ -520,11 +784,17 @@
               <input type="text" v-model="localContent.stats.bgColor" class="form-control form-control--sm" />
             </div>
           </div>
-          <div v-for="(stat, i) in localContent.stats.stats" :key="stat.id" class="stat-editor">
+          <div v-for="stat in localContent.stats.stats" :key="stat.id" class="stat-editor">
             <div class="admin-grid-3">
               <div class="form-group">
                 <label>Valeur</label>
-                <input v-model.number="stat.value" type="number" class="form-control" />
+                <select v-model="stat.source" class="form-control">
+                  <option value="">Saisie manuelle</option>
+                  <option value="anciennete">Automatique : années d'expertise</option>
+                  <option value="nb_expertises">Automatique : nombre d'expertises</option>
+                </select>
+                <input v-if="!stat.source" v-model.number="stat.value" type="number" class="form-control" />
+                <small v-else class="admin-section-hint">= {{ statPreview({ ...stat, suffix: '' }) }}</small>
               </div>
               <div class="form-group">
                 <label>Suffixe</label>
@@ -544,11 +814,153 @@
       </div>
 
       <!-- ===========================
+           ONGLET : Slider (blocs de logos)
+           =========================== -->
+      <div v-if="activeTab === 'sliders'" class="admin-panel">
+        <div class="admin-section">
+          <div class="admin-section__header">
+            <h3>Sliders de logos ({{ localContent.sliders.length }})</h3>
+            <button class="btn-add" @click="addSlider">+ Ajouter un slider</button>
+          </div>
+          <p class="admin-section-hint">
+            Chaque slider est un bloc indépendant affiché sur le site, à la suite des autres et dans cet ordre (avant la section Contact).
+            Réorganisez les sliders avec ⠿ et les logos en les faisant glisser par leur image, y compris d'un slider à l'autre.
+            Un slider sans logo n'est pas affiché.
+          </p>
+        </div>
+
+        <draggable v-model="localContent.sliders" item-key="id" handle=".slider-drag" class="services-list">
+          <template #item="{ element: slider, index: si }">
+            <div
+              class="admin-section slider-editor"
+              :class="{ 'logo-drop--active': dropTarget === slider.id }"
+              @dragover.prevent="onFileDragOver($event, slider.id)"
+              @dragleave="dropTarget = ''"
+              @drop.prevent="onFileDrop($event, slider)"
+            >
+              <div class="service-editor__header">
+                <span class="drag-handle slider-drag" title="Déplacer le slider">⠿</span>
+                <span class="service-editor__num">Slider {{ si + 1 }} — {{ slider.title || 'sans titre' }} · {{ slider.logos.length }} logo(s)</span>
+                <label class="toggle">
+                  <input type="checkbox" v-model="slider.visible" />
+                  <span>Visible</span>
+                </label>
+                <button class="btn-delete" @click="removeSlider(si)" title="Supprimer le slider">×</button>
+              </div>
+
+              <div class="admin-grid-2">
+                <div class="form-group">
+                  <label>Sur-titre</label>
+                  <input v-model="slider.eyebrow" type="text" class="form-control" placeholder="Nos partenaires" />
+                </div>
+                <div class="form-group">
+                  <label>Titre</label>
+                  <input v-model="slider.title" type="text" class="form-control" placeholder="Partenaires financiers" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Texte (optionnel)</label>
+                <input v-model="slider.subtitle" type="text" class="form-control" />
+              </div>
+
+              <div class="slider-timing">
+                <div class="form-group">
+                  <label>Type de défilement</label>
+                  <select v-model="slider.mode" class="form-control">
+                    <option value="continuous">Continu (bande qui défile en permanence)</option>
+                    <option value="step">Par étapes (avance d'un logo puis marque une pause)</option>
+                  </select>
+                </div>
+                <div v-if="slider.mode === 'step'" class="form-group">
+                  <label>Temps d'affichage entre deux logos (secondes)</label>
+                  <input v-model.number="slider.interval" type="number" min="1" max="30" step="0.5" class="form-control" />
+                </div>
+                <div v-else class="form-group">
+                  <label>Durée d'un tour complet (secondes) — plus petit = plus rapide</label>
+                  <input v-model.number="slider.speed" type="number" min="5" max="180" step="1" class="form-control" />
+                </div>
+                <div class="form-group">
+                  <label>Couleur de fond</label>
+                  <div class="color-picker-row">
+                    <input type="color" v-model="slider.bgColor" class="color-input" />
+                    <input type="text" v-model="slider.bgColor" class="form-control form-control--sm" placeholder="vide = défaut" />
+                  </div>
+                </div>
+              </div>
+              <div class="slider-options">
+                <label class="toggle">
+                  <input type="checkbox" v-model="slider.reverse" />
+                  <span>Défilement vers la droite</span>
+                </label>
+                <label class="toggle">
+                  <input type="checkbox" v-model="slider.grayscale" />
+                  <span>Logos en gris (couleur au survol)</span>
+                </label>
+                <span class="admin-section-hint">Ancre pour le menu : <code>#slider-{{ slider.id }}</code></span>
+              </div>
+
+              <draggable
+                v-model="slider.logos"
+                item-key="id"
+                group="logos"
+                handle=".logo-card__img"
+                class="logo-grid"
+              >
+                <template #item="{ element: logo, index: li }">
+                  <div class="logo-card">
+                    <div class="logo-card__img" title="Glisser pour déplacer">
+                      <img :src="resolveMediaUrl(logo.url)" :alt="logo.name" />
+                    </div>
+                    <input v-model="logo.name" type="text" class="form-control form-control--sm" placeholder="Nom du partenaire" />
+                    <input v-model="logo.link" type="url" class="form-control form-control--sm" placeholder="Lien (optionnel)" />
+                    <button class="logo-card__delete" @click="slider.logos.splice(li, 1)" title="Retirer ce logo">×</button>
+                  </div>
+                </template>
+                <template #footer>
+                  <label class="logo-card logo-card--add">
+                    <span>{{ uploadingSlider === slider.id ? 'Envoi…' : '+ Importer des logos' }}</span>
+                    <small>ou glissez vos fichiers sur ce slider</small>
+                    <input type="file" accept="image/*" multiple hidden @change="onLogoInput($event, slider)" />
+                  </label>
+                </template>
+              </draggable>
+
+              <button class="btn-add" style="margin-top:0.75rem" @click="pickerFor = pickerFor === slider.id ? '' : slider.id">
+                {{ pickerFor === slider.id ? 'Fermer la médiathèque' : 'Choisir dans la médiathèque' }}
+              </button>
+              <div v-if="pickerFor === slider.id" class="logo-picker">
+                <p v-if="!imageMedia.length" class="admin-empty-hint">Aucune image dans la médiathèque.</p>
+                <button
+                  v-for="m in imageMedia"
+                  :key="m.id"
+                  class="logo-picker__item"
+                  :title="m.originalName"
+                  @click="addLogo(slider, m.url, m.originalName)"
+                >
+                  <img :src="resolveMediaUrl(m.url)" :alt="m.originalName" />
+                </button>
+              </div>
+            </div>
+          </template>
+        </draggable>
+
+        <button class="btn-add slider-add-bottom" @click="addSlider">+ Ajouter un slider</button>
+        <button class="btn btn-primary btn-save" @click="saveContent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+            Enregistrer
+          </button>
+      </div>
+
+      <!-- ===========================
            ONGLET : Contact & EmailJS
            =========================== -->
       <div v-if="activeTab === 'contact'" class="admin-panel">
         <div class="admin-section">
           <h3>Textes de la section</h3>
+          <div class="form-group">
+            <label>Sur-titre</label>
+            <input v-model="localContent.contact.eyebrow" type="text" class="form-control" placeholder="Nous contacter" />
+          </div>
           <div class="form-group">
             <label>Titre</label>
             <input v-model="localContent.contact.title" type="text" class="form-control" />
@@ -577,20 +989,56 @@
           </div>
         </div>
         <div class="admin-section">
-          <h3>Coordonnées affichées</h3>
+          <h3>Carte coordonnées & horaires</h3>
+          <p class="admin-section-hint">Téléphone, email et adresse sont ceux de l'onglet <strong>Configuration → Coordonnées</strong> (source unique).</p>
           <div class="admin-grid-2">
             <div class="form-group">
-              <label>Téléphone</label>
-              <input v-model="localContent.contact.phone" type="text" class="form-control" />
+              <label>Titre de la carte</label>
+              <input v-model="localContent.contact.cardTitle" type="text" class="form-control" placeholder="Nos coordonnées" />
             </div>
             <div class="form-group">
-              <label>Email</label>
-              <input v-model="localContent.contact.email" type="email" class="form-control" />
+              <label>Libellé de l'adresse</label>
+              <input v-model="localContent.contact.addressLabel" type="text" class="form-control" placeholder="Adresse" />
             </div>
             <div class="form-group">
-              <label>Adresse</label>
-              <input v-model="localContent.contact.address" type="text" class="form-control" />
+              <label>Titre des horaires</label>
+              <input v-model="localContent.contact.hoursTitle" type="text" class="form-control" placeholder="Horaires d'ouverture" />
             </div>
+          </div>
+          <div class="form-group">
+            <label>Horaires (une ligne par horaire, vide = bloc masqué)</label>
+            <textarea v-model="localContent.contact.hours" class="form-control" rows="4"
+              placeholder="Lundi — Vendredi : 9h00 — 18h00"></textarea>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <h3>Formulaire de contact</h3>
+          <p class="admin-section-hint">Les sujets proposés sont les expertises visibles, suivis de l'option « autre ». L'astérisque des champs obligatoires est ajouté automatiquement.</p>
+          <div class="admin-grid-2">
+            <div class="form-group"><label>Libellé — Nom</label><input v-model="localContent.contact.form.nameLabel" type="text" class="form-control" /></div>
+            <div class="form-group"><label>Exemple — Nom</label><input v-model="localContent.contact.form.namePlaceholder" type="text" class="form-control" /></div>
+            <div class="form-group"><label>Libellé — Email</label><input v-model="localContent.contact.form.emailLabel" type="text" class="form-control" /></div>
+            <div class="form-group"><label>Exemple — Email</label><input v-model="localContent.contact.form.emailPlaceholder" type="text" class="form-control" /></div>
+            <div class="form-group"><label>Libellé — Téléphone</label><input v-model="localContent.contact.form.phoneLabel" type="text" class="form-control" /></div>
+            <div class="form-group"><label>Exemple — Téléphone</label><input v-model="localContent.contact.form.phonePlaceholder" type="text" class="form-control" /></div>
+            <div class="form-group"><label>Libellé — Sujet</label><input v-model="localContent.contact.form.subjectLabel" type="text" class="form-control" /></div>
+            <div class="form-group"><label>Choix par défaut — Sujet</label><input v-model="localContent.contact.form.subjectPlaceholder" type="text" class="form-control" /></div>
+            <div class="form-group"><label>Option « autre » (vide = masquée)</label><input v-model="localContent.contact.form.otherSubject" type="text" class="form-control" /></div>
+            <div class="form-group"><label>Libellé — Message</label><input v-model="localContent.contact.form.messageLabel" type="text" class="form-control" /></div>
+            <div class="form-group"><label>Bouton d'envoi</label><input v-model="localContent.contact.form.submitText" type="text" class="form-control" /></div>
+            <div class="form-group"><label>Bouton pendant l'envoi</label><input v-model="localContent.contact.form.sendingText" type="text" class="form-control" /></div>
+          </div>
+          <div class="form-group"><label>Exemple — Message</label><input v-model="localContent.contact.form.messagePlaceholder" type="text" class="form-control" /></div>
+          <div class="form-group"><label>Message de succès</label><textarea v-model="localContent.contact.form.successMessage" class="form-control" rows="2"></textarea></div>
+          <div class="form-group"><label>Message d'erreur d'envoi</label><textarea v-model="localContent.contact.form.errorMessage" class="form-control" rows="2"></textarea></div>
+          <div class="form-group"><label>Message « champs obligatoires »</label><textarea v-model="localContent.contact.form.requiredMessage" class="form-control" rows="2"></textarea></div>
+          <div class="form-group"><label>Message « formulaire non configuré » (EmailJS absent)</label><textarea v-model="localContent.contact.form.notConfiguredMessage" class="form-control" rows="2"></textarea></div>
+        </div>
+
+        <div class="admin-section">
+          <h3>Apparence</h3>
+          <div class="admin-grid-2">
             <div class="form-group">
               <label>Couleur de fond</label>
               <div class="color-picker-row">
@@ -624,7 +1072,7 @@
           </div>
           <div class="form-group">
             <label>Mots-clés</label>
-            <input v-model="localSeo.keywords" type="text" class="form-control" placeholder="gestion patrimoine, conseil financier, ..." />
+            <input v-model="localSeo.keywords" type="text" class="form-control" placeholder="family office, conseil en gestion de patrimoine, CGP Grenoble, ..." />
           </div>
           <div class="form-group">
             <label>URL canonique</label>
@@ -827,8 +1275,11 @@ import draggable from 'vuedraggable'
 import { useSiteConfigStore } from '@/stores/siteConfig'
 import { useAuthStore } from '@/stores/auth'
 import { useApi } from '@/composables/useApi'
-import type { SiteConfig, SiteContent, SeoConfig, TrackingConfig, MediaFile } from '@/types'
+import type { SiteConfig, SiteContent, SeoConfig, TrackingConfig, MediaFile, LogoSlider } from '@/types'
 import FontPicker from '@/components/admin/FontPicker.vue'
+import { resolveAssetUrl, resolveMediaUrl } from '@/utils/asset'
+
+const siteUrl = import.meta.env.BASE_URL
 
 const router = useRouter()
 const store = useSiteConfigStore()
@@ -858,10 +1309,21 @@ const localConfig = reactive<SiteConfig>(JSON.parse(JSON.stringify(config.value 
   colors: { bg: '#FFFFFF', bgSoft: '#F5F5F7', text: '#1e1a34', gold: '#C9A84C', goldDark: '#A8873E' },
   fonts: { heading: 'Playfair Display', body: 'Inter', weights: ['400', '600', '700'] },
   socialLinks: {},
-  legalInfo: { orias: '', cif: '', carteT: '', rcPro: '', tvaIntra: '', siret: '', address: '', city: '', phone: '', email: '' }
+  legalInfo: { orias: '', cif: '', cifAssociation: '', coa: '', iobsp: '', carteT: '', rcPro: '', rcProInsurer: '', mediator: '', rcs: '', tvaIntra: '', siret: '', address: '', city: '', phone: '', email: '' }
 })))
 
 const localContent = reactive<SiteContent>(JSON.parse(JSON.stringify(content.value || {})))
+// Contenu enregistré avant l'ajout de la section Family Office
+if (!localContent.familyOffice) {
+  localContent.familyOffice = {
+    eyebrow: 'Family Office', title: '', text: '', pillars: [], stepsTitle: 'Notre méthode',
+    steps: [], ctaText: '', ctaLink: '#contact', bgColor: ''
+  }
+}
+if (!localContent.sectionsVisible) localContent.sectionsVisible = {}
+if (localContent.sectionsVisible.familyOffice === undefined) {
+  localContent.sectionsVisible.familyOffice = true
+}
 const localSeo = reactive<SeoConfig>(JSON.parse(JSON.stringify(seo.value || { title: '', description: '', keywords: '', ogImage: '', canonicalUrl: '' })))
 const localTracking = reactive<TrackingConfig>(JSON.parse(JSON.stringify(tracking.value || { gtmId: '', ga4Id: '', uaId: '', matomoUrl: '', matomoSiteId: '', matomoTagManagerUrl: '', tiktokId: '', googleMapsKey: '', enabledServices: {} })))
 
@@ -872,16 +1334,36 @@ const pwSuccess = ref('')
 
 const tabs = [
   { id: 'config', label: 'Configuration', icon: '⚙️' },
+  { id: 'nav', label: 'Menu', icon: '☰' },
   { id: 'hero', label: 'Hero', icon: '🖼' },
-  { id: 'services', label: 'Services', icon: '🏛' },
+  { id: 'services', label: 'Expertises', icon: '🏛' },
+  { id: 'familyOffice', label: 'Family Office', icon: '👪' },
   { id: 'about', label: 'À propos', icon: '📖' },
   { id: 'stats', label: 'Statistiques', icon: '📊' },
+  { id: 'sliders', label: 'Slider', icon: '🎞' },
   { id: 'contact', label: 'Contact / EmailJS', icon: '✉️' },
   { id: 'seo', label: 'SEO', icon: '🔍' },
   { id: 'tracking', label: 'Tracking & Cookies', icon: '📍' },
   { id: 'media', label: 'Médias', icon: '🖼' },
   { id: 'password', label: 'Mot de passe', icon: '🔐' }
 ]
+
+const textVarList = [
+  { key: 'nom_cabinet', label: 'Nom du cabinet (Configuration)' },
+  { key: 'annee_creation', label: 'Année de création (Configuration)' },
+  { key: 'anciennete', label: "Années d'expertise (Configuration)" },
+  { key: 'nb_expertises', label: 'Nombre d\'expertises visibles (automatique)' },
+  { key: 'annee_courante', label: 'Année en cours (automatique)' },
+  { key: 'telephone', label: 'Téléphone (Configuration)' },
+  { key: 'email', label: 'Email (Configuration)' },
+  { key: 'ville', label: 'Ville (Configuration)' }
+]
+
+function statPreview(stat: { value: number; suffix: string; source?: string }): string {
+  if (stat.source === 'anciennete') return `${localConfig.yearsOfExpertise}${stat.suffix}`
+  if (stat.source === 'nb_expertises') return `${localContent.services.filter(s => s.visible).length}${stat.suffix}`
+  return `${stat.value}${stat.suffix}`
+}
 
 const currentTabLabel = computed(() => tabs.find(t => t.id === activeTab.value)?.label || '')
 
@@ -942,7 +1424,7 @@ async function saveTracking() {
 function addService() {
   localContent.services.push({
     id: Math.random().toString(36).slice(2),
-    title: 'Nouveau service',
+    title: 'Nouvelle expertise',
     description: '',
     icon: 'patrimoine',
     bgColor: '',
@@ -952,17 +1434,23 @@ function addService() {
   })
 }
 
+// Piliers et étapes n'ont pas d'id persistant : clé stable par objet pour le drag & drop
+const foKeys = new WeakMap<object, string>()
+function foItemKey(item: object): string {
+  let key = foKeys.get(item)
+  if (!key) {
+    key = Math.random().toString(36).slice(2)
+    foKeys.set(item, key)
+  }
+  return key
+}
+
 function removeService(i: number) {
   localContent.services.splice(i, 1)
 }
 
 function addMilestone() {
   localContent.about.milestones.push({ year: '', label: '' })
-}
-
-function addQuickLink() {
-  if (!localContent.footer.quickLinks) localContent.footer.quickLinks = []
-  localContent.footer.quickLinks.push({ label: '', href: '' })
 }
 
 function addLegalLink() {
@@ -977,8 +1465,7 @@ async function loadMedia() {
   } catch {}
 }
 
-async function uploadFile(file: File) {
-  uploading.value = true
+async function sendToMedia(file: File): Promise<MediaFile | null> {
   const formData = new FormData()
   formData.append('file', file)
   const token = localStorage.getItem('oefic_admin_token')
@@ -987,14 +1474,83 @@ async function uploadFile(file: File) {
     headers: { Authorization: `Bearer ${token}` },
     body: formData
   })
-  if (res.ok) {
-    const f = await res.json() as MediaFile
-    mediaFiles.value.unshift(f)
-    showSave('✓ Fichier uploadé : ' + f.originalName)
-  } else {
-    showSave('Erreur lors de l\'upload', 'err')
-  }
+  if (!res.ok) return null
+  const f = await res.json() as MediaFile
+  mediaFiles.value.unshift(f)
+  return f
+}
+
+async function uploadFile(file: File) {
+  uploading.value = true
+  const f = await sendToMedia(file)
+  if (f) showSave('✓ Fichier uploadé : ' + f.originalName)
+  else showSave('Erreur lors de l\'upload', 'err')
   uploading.value = false
+}
+
+// ---------------------------------------------------------------------------
+// Slider : blocs de logos indépendants
+// ---------------------------------------------------------------------------
+const pickerFor = ref('')
+const dropTarget = ref('')
+const uploadingSlider = ref('')
+const imageMedia = computed(() => mediaFiles.value.filter(f => /image/.test(f.mimetype)))
+
+if (!localContent.sliders) localContent.sliders = []
+
+function newId(): string {
+  return Math.random().toString(36).slice(2, 10)
+}
+
+function addSlider() {
+  localContent.sliders.push({
+    id: newId(), eyebrow: '', title: 'Nouveau slider', subtitle: '', visible: true,
+    mode: 'continuous', speed: 30, interval: 3, reverse: false, grayscale: true, bgColor: '', logos: []
+  })
+}
+
+function removeSlider(i: number) {
+  const slider = localContent.sliders[i]
+  if (slider.logos.length && !confirm(`Supprimer le slider « ${slider.title} » et ses ${slider.logos.length} logo(s) ?`)) return
+  localContent.sliders.splice(i, 1)
+}
+
+function addLogo(slider: LogoSlider, url: string, fileName: string) {
+  slider.logos.push({ id: newId(), name: fileName.replace(/\.[^.]+$/, ''), url, link: '' })
+}
+
+async function uploadLogos(slider: LogoSlider, files: FileList | File[]) {
+  const images = Array.from(files).filter(f => f.type.startsWith('image/'))
+  if (!images.length) return
+  uploadingSlider.value = slider.id
+  let ok = 0
+  for (const file of images) {
+    const media = await sendToMedia(file)
+    if (media) {
+      addLogo(slider, media.url, media.originalName)
+      ok++
+    }
+  }
+  uploadingSlider.value = ''
+  if (ok === images.length) showSave(`✓ ${ok} logo(s) ajouté(s) — pensez à enregistrer`)
+  else showSave(`${ok}/${images.length} logo(s) importé(s), certains fichiers ont été refusés`, 'err')
+}
+
+function onLogoInput(e: Event, slider: LogoSlider) {
+  const input = e.target as HTMLInputElement
+  if (input.files) uploadLogos(slider, input.files)
+  input.value = ''
+}
+
+function onFileDragOver(e: DragEvent, id: string) {
+  // Ne réagit qu'aux fichiers venant de l'ordinateur, pas au glisser-déposer des logos
+  if (e.dataTransfer?.types.includes('Files')) dropTarget.value = id
+}
+
+function onFileDrop(e: DragEvent, slider: LogoSlider) {
+  dropTarget.value = ''
+  const files = e.dataTransfer?.files
+  if (files?.length) uploadLogos(slider, files)
 }
 
 function handleDrop(e: DragEvent) {
@@ -1064,6 +1620,193 @@ onMounted(() => {
   min-height: 100vh;
   background: #f0f0f5;
   font-family: var(--font-body);
+}
+
+.slider-editor {
+  margin-bottom: 1.25rem;
+}
+
+.slider-timing {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  margin: 0.5rem 0 0.75rem;
+  background: #f5f5f7;
+  border-radius: 10px;
+}
+
+.slider-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  align-items: center;
+}
+
+.slider-add-bottom {
+  display: block;
+  margin: 0 0 1.25rem;
+}
+
+.logo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.logo-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: #fff;
+  border: 1px solid #e5e5ea;
+  border-radius: 10px;
+  padding: 0.6rem;
+}
+
+.logo-card__img {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+  border-radius: 6px;
+  cursor: grab;
+}
+
+.logo-card__img img {
+  max-height: 56px;
+  max-width: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.logo-card__delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(220, 38, 38, 0.9);
+  color: #fff;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.logo-card--add {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 150px;
+  border: 2px dashed rgba(201, 168, 76, 0.5);
+  color: var(--color-gold-dark);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.logo-card--add small {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.logo-drop--active {
+  outline: 2px dashed var(--color-gold);
+  outline-offset: 4px;
+}
+
+.logo-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.logo-picker__item {
+  height: 70px;
+  border: 1px solid #e5e5ea;
+  border-radius: 6px;
+  background: #fafafa;
+  cursor: pointer;
+  padding: 0.4rem;
+}
+
+.logo-picker__item:hover {
+  border-color: var(--color-gold);
+}
+
+.logo-picker__item img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.admin-vars {
+  background: #fff;
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+}
+
+.admin-vars summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-gold-dark);
+}
+
+.admin-vars p {
+  margin: 0.75rem 0 0.5rem;
+  color: var(--color-text-muted);
+}
+
+.admin-vars ul {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 0.35rem 1.5rem;
+}
+
+.admin-vars li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.admin-vars em {
+  color: var(--color-text-muted);
+}
+
+.admin-vars code,
+.admin-section-hint code,
+.form-group label code {
+  background: rgba(201, 168, 76, 0.12);
+  color: var(--color-gold-dark);
+  padding: 0 0.35rem;
+  border-radius: 4px;
+  font-size: 0.8em;
+}
+
+.fo-item-editor .service-editor__num {
+  white-space: nowrap;
+}
+
+.fo-item-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 /* Sidebar */

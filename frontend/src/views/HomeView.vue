@@ -7,6 +7,10 @@
         v-if="content?.sectionsVisible?.services !== false"
         id="services"
       />
+      <FamilyOfficeSection
+        v-if="content?.sectionsVisible?.familyOffice !== false"
+        id="family-office"
+      />
       <AboutSection
         v-if="content?.sectionsVisible?.about !== false"
         id="about"
@@ -14,6 +18,12 @@
       <StatsSection
         v-if="content?.sectionsVisible?.stats !== false"
         id="stats"
+      />
+      <LogoSliderSection
+        v-for="slider in visibleSliders"
+        :key="slider.id"
+        :id="`slider-${slider.id}`"
+        :slider="slider"
       />
       <ContactSection
         v-if="content?.sectionsVisible?.contact !== false"
@@ -26,16 +36,24 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSiteConfigStore } from '@/stores/siteConfig'
 import NavBar from '@/components/layout/NavBar.vue'
 import SiteFooter from '@/components/layout/SiteFooter.vue'
 import HeroSection from '@/components/sections/HeroSection.vue'
 import ServicesSection from '@/components/sections/ServicesSection.vue'
+import FamilyOfficeSection from '@/components/sections/FamilyOfficeSection.vue'
 import AboutSection from '@/components/sections/AboutSection.vue'
 import StatsSection from '@/components/sections/StatsSection.vue'
+import LogoSliderSection from '@/components/sections/LogoSliderSection.vue'
 import ContactSection from '@/components/sections/ContactSection.vue'
 import TrackingManager from '@/components/utils/TrackingManager.vue'
 
-const { content } = storeToRefs(useSiteConfigStore())
+const { displayContent: content } = storeToRefs(useSiteConfigStore())
+
+// Sliders affichés à la suite, dans l'ordre du backoffice ; un slider sans logo est masqué
+const visibleSliders = computed(() =>
+  (content.value?.sliders ?? []).filter(s => s.visible && s.logos.length)
+)
 </script>

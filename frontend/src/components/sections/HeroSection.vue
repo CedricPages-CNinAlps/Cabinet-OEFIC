@@ -22,8 +22,8 @@
 
       <!-- Card glass morphism -->
       <div class="hero__glass" ref="glassRef">
-        <div class="hero__badge">
-          <span>Depuis 1984</span>
+        <div v-if="hero?.badgeText" class="hero__badge">
+          <span>{{ hero.badgeText }}</span>
         </div>
 
         <h1 class="hero__title" v-html="formattedTitle"></h1>
@@ -51,18 +51,13 @@
         </div>
 
         <!-- Stats rapides -->
-        <div class="hero__quick-stats">
-          <div class="hero__quick-stat">
-            <strong>40</strong><span>ans</span>
-          </div>
-          <div class="hero__quick-stat-divider"></div>
-          <div class="hero__quick-stat">
-            <strong>500+</strong><span>clients</span>
-          </div>
-          <div class="hero__quick-stat-divider"></div>
-          <div class="hero__quick-stat">
-            <strong>5</strong><span>expertises</span>
-          </div>
+        <div v-if="quickStats.length" class="hero__quick-stats">
+          <template v-for="(qs, i) in quickStats" :key="i">
+            <div v-if="i > 0" class="hero__quick-stat-divider"></div>
+            <div class="hero__quick-stat">
+              <strong>{{ qs.value }}</strong><span>{{ qs.label }}</span>
+            </div>
+          </template>
         </div>
       </div>
 
@@ -70,7 +65,7 @@
 
     <!-- Scroll indicator -->
     <div class="hero__scroll" ref="scrollRef">
-      <span>Découvrir</span>
+      <span>{{ hero?.scrollText }}</span>
       <div class="hero__scroll-line"></div>
     </div>
   </section>
@@ -83,8 +78,16 @@ import { useSiteConfigStore } from '@/stores/siteConfig'
 import { resolveAssetUrl } from '@/utils/asset'
 import { gsap } from 'gsap'
 
-const { config, content } = storeToRefs(useSiteConfigStore())
+const { displayConfig: config, displayContent: content } = storeToRefs(useSiteConfigStore())
 const hero = computed(() => content.value?.hero)
+
+// Chiffres rapides : valeurs reprises des chiffres clés (onglet Statistiques)
+const quickStats = computed(() =>
+  (hero.value?.quickStats ?? []).flatMap(qs => {
+    const stat = content.value?.stats.stats.find(s => s.id === qs.statId)
+    return stat ? [{ value: `${stat.value}${stat.suffix}`, label: qs.label || stat.label }] : []
+  })
+)
 
 const contentRef = ref<HTMLElement | null>(null)
 const logoRef = ref<HTMLElement | null>(null)
@@ -98,7 +101,7 @@ const heroBg = computed(() => {
 })
 
 const formattedTitle = computed(() => {
-  const title = hero.value?.title || '40 ans d\'expertise\nau service de votre patrimoine'
+  const title = hero.value?.title || ''
   return title.replace(/\n/g, '<br/>')
 })
 
