@@ -40,7 +40,7 @@
         id="contact"
       />
     </main>
-    <SiteFooter />
+    <SiteFooter v-if="!statusPage" />
     <TrackingManager />
   </div>
 </template>

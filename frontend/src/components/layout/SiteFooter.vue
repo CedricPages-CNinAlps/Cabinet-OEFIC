@@ -1,7 +1,7 @@
 <template>
-  <footer v-milk class="footer" :style="footerStyle">
+  <footer v-milk="!legalOnly" class="footer" :class="{ 'footer--legal-only': legalOnly }" :style="footerStyle">
     <div class="footer__main container">
-      <div class="footer__brand">
+      <div v-if="!legalOnly" class="footer__brand">
         <img
           :src="resolveAssetUrl(config?.logoUrl || '/assets/logo.png')"
           :alt="config?.siteName"
@@ -22,7 +22,7 @@
         </div>
       </div>
 
-      <div class="footer__col">
+      <div v-if="!legalOnly" class="footer__col">
         <h4>{{ footer?.navTitle }}</h4>
         <ul>
           <li v-for="link in content?.nav?.links" :key="link.label + link.href">
@@ -31,7 +31,7 @@
         </ul>
       </div>
 
-      <div class="footer__col">
+      <div v-if="!legalOnly" class="footer__col">
         <h4>{{ footer?.servicesTitle }}</h4>
         <ul>
           <li v-for="svc in footerServices" :key="svc.id">
@@ -40,7 +40,7 @@
         </ul>
       </div>
 
-      <div class="footer__col">
+      <div v-if="!legalOnly" class="footer__col">
         <h4>{{ footer?.contactTitle }}</h4>
         <ul>
           <li v-if="config?.legalInfo?.phone">
@@ -77,7 +77,7 @@
     </div>
 
     <!-- Bottom bar -->
-    <div class="footer__bottom">
+    <div v-if="!legalOnly" class="footer__bottom">
       <div class="container footer__bottom-inner">
         <p class="footer__copyright" v-html="copyrightHtml"></p>
         <div class="footer__legal-links">
@@ -105,6 +105,9 @@ import { useSiteConfigStore } from '@/stores/siteConfig'
 import { resolveAssetUrl } from '@/utils/asset'
 import { telHref } from '@/utils/contact'
 
+// legalOnly : uniquement les numéros réglementaires, sur le fond de la section parente (pages maintenance / reconstruction)
+const props = defineProps<{ legalOnly?: boolean }>()
+
 const { displayConfig: config, displayContent: content } = storeToRefs(useSiteConfigStore())
 const footer = computed(() => content.value?.footer)
 
@@ -118,7 +121,7 @@ const footerServices = computed(() =>
 const currentYear = new Date().getFullYear()
 
 const footerStyle = computed(() => ({
-  backgroundColor: footer.value?.bgColor || '#1e1a34',
+  backgroundColor: props.legalOnly ? 'transparent' : footer.value?.bgColor || '#1e1a34',
   '--footer-text': footer.value?.textColor || 'rgba(255,255,255,0.7)'
 }))
 
@@ -164,6 +167,12 @@ const hasLegalNumbers = computed(() => {
   padding-top: 5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid color-mix(in srgb, var(--footer-text, white) 10%, transparent);
+}
+
+.footer--legal-only .footer__main {
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 0;
 }
 
 /* Brand */

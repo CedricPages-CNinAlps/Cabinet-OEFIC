@@ -43,9 +43,9 @@ export const vReveal: Directive<RevealEl, number | undefined> = {
 type MilkEl = HTMLElement & { _milk?: { off: () => void; gone: boolean } }
 
 /** v-milk : voile laiteux animé derrière la section (WebGL chargé à la demande). */
-export const vMilk: Directive<MilkEl> = {
-  mounted(el) {
-    if (reducedMotion()) return
+export const vMilk: Directive<MilkEl, boolean | undefined> = {
+  mounted(el, { value }) {
+    if (reducedMotion() || value === false) return
     const state = { off: () => {}, gone: false }
     el._milk = state
     import('./milkyBackground').then(m => { if (!state.gone) state.off = m.attachMilk(el) })

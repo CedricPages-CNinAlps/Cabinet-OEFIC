@@ -10,6 +10,7 @@
       <div class="site-status__divider"></div>
       <p v-if="text?.message" class="site-status__message">{{ text.message }}</p>
     </div>
+    <SiteFooter legal-only class="site-status__legal" />
   </section>
 </template>
 
@@ -18,6 +19,7 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSiteConfigStore } from '@/stores/siteConfig'
 import { resolveAssetUrl } from '@/utils/asset'
+import SiteFooter from '@/components/layout/SiteFooter.vue'
 
 const props = defineProps<{ mode: 'maintenance' | 'construction' }>()
 
@@ -26,18 +28,28 @@ const text = computed(() => content.value?.siteStatus?.[props.mode])
 </script>
 
 <style scoped>
+/* Contenu centré dans l'écran, mentions réglementaires en bas */
 .site-status {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 4rem 1.25rem;
+  padding: 4rem 1.25rem 0;
   background: linear-gradient(135deg, #1e1a34 0%, #2d2850 45%, #1a2b4a 100%);
 }
 
 .site-status__inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   max-width: 680px;
   text-align: center;
+}
+
+.site-status__legal {
+  width: 100%;
+  margin-top: 3rem;
 }
 
 .site-status__logo {
