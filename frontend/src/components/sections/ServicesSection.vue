@@ -1,5 +1,5 @@
 <template>
-  <section class="services section" :style="sectionBg">
+  <section v-milk class="services section" :style="sectionBg">
     <div class="container">
       <div v-reveal class="section-header">
         <span v-if="header?.eyebrow" class="eyebrow">{{ header.eyebrow }}</span>

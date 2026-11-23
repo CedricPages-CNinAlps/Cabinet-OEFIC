@@ -40,7 +40,24 @@ export const vReveal: Directive<RevealEl, number | undefined> = {
   },
 }
 
-type TiltEl = HTMLElement & { _tilt?: AtroposInstance }
+type MilkEl = HTMLElement & { _milk?: { off: () => void; gone: boolean } }
+
+/** v-milk : voile laiteux animé derrière la section (WebGL chargé à la demande). */
+export const vMilk: Directive<MilkEl> = {
+  mounted(el) {
+    if (reducedMotion()) return
+    const state = { off: () => {}, gone: false }
+    el._milk = state
+    import('./milkyBackground').then(m => { if (!state.gone) state.off = m.attachMilk(el) })
+  },
+  unmounted(el) {
+    if (!el._milk) return
+    el._milk.gone = true
+    el._milk.off()
+  },
+}
+
+type TiltEl =HTMLElement & { _tilt?: AtroposInstance }
 
 /** v-tilt : inclinaison 3D au survol (Atropos). L'élément doit contenir la structure .atropos-scale > .atropos-rotate > .atropos-inner. */
 export const vTilt: Directive<TiltEl> = {

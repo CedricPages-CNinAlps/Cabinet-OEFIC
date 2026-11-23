@@ -1,5 +1,5 @@
 <template>
-  <section class="about section section-soft" :style="sectionBg" ref="sectionRef">
+  <section v-milk class="about section section-soft" :style="sectionBg" ref="sectionRef">
     <div class="container">
       <div class="about__grid">
         <!-- Texte -->

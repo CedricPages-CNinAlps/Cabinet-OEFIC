@@ -1,8 +1,5 @@
 <template>
-  <section class="hero" :style="heroBg">
-    <!-- Fond animé WebGL (absent si couleur imposée, mouvement réduit ou pas de WebGL) -->
-    <div v-show="!hero?.bgColor" class="hero__shader" ref="shaderRef" aria-hidden="true"></div>
-
+  <section v-milk class="hero" :style="heroBg">
     <!-- Particules animées -->
     <div class="hero__particles" aria-hidden="true">
       <span
@@ -80,7 +77,6 @@ import { storeToRefs } from 'pinia'
 import { useSiteConfigStore } from '@/stores/siteConfig'
 import { resolveAssetUrl } from '@/utils/asset'
 import { gsap } from 'gsap'
-import { reducedMotion } from '@/animations/motion'
 
 const { displayConfig: config, displayContent: content } = storeToRefs(useSiteConfigStore())
 const hero = computed(() => content.value?.hero)
@@ -132,17 +128,6 @@ function particleStyle(i: number) {
 }
 
 let tl: gsap.core.Timeline | null = null
-const shaderRef = ref<HTMLElement | null>(null)
-let unmountShader = () => {}
-let unmounted = false
-
-onMounted(async () => {
-  if (shaderRef.value && !hero.value?.bgColor && !reducedMotion()) {
-    const { mountHeroShader } = await import('@/animations/heroShader')
-    if (!unmounted && shaderRef.value) unmountShader = mountHeroShader(shaderRef.value)
-  }
-})
-
 onMounted(() => {
   if (!contentRef.value) return
 
@@ -169,9 +154,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  unmounted = true
   tl?.kill()
-  unmountShader()
 })
 </script>
 
@@ -184,18 +167,6 @@ onUnmounted(() => {
   position: relative;
   overflow: hidden;
   background: linear-gradient(135deg, #1e1a34 0%, #2d2850 45%, #1a2b4a 100%);
-}
-
-.hero__shader {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.hero__shader :deep(canvas) {
-  display: block;
-  width: 100%;
-  height: 100%;
 }
 
 /* ===========================

@@ -1,5 +1,5 @@
 <template>
-  <section v-if="fo" class="family-office section" :style="sectionBg">
+  <section v-milk v-if="fo" class="family-office section" :style="sectionBg">
     <div class="container">
       <div v-reveal class="section-header">
         <span class="eyebrow">{{ fo.eyebrow || 'Family Office' }}</span>

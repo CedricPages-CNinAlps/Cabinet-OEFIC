@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer" :style="footerStyle">
+  <footer v-milk class="footer" :style="footerStyle">
     <div class="footer__main container">
       <div class="footer__brand">
         <img

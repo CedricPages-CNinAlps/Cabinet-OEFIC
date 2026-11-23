@@ -1,5 +1,5 @@
 <template>
-  <section class="stats" :style="sectionStyle" ref="sectionRef">
+  <section v-milk class="stats" :style="sectionStyle" ref="sectionRef">
     <div class="container">
       <div class="stats__grid">
         <div
