@@ -15,7 +15,7 @@ void main() { vUv = uv; gl_Position = vec4(position, 0., 1.); }`
 
 const fragment = /* glsl */ `
 precision highp float;
-uniform float uTime; uniform float uSeed; uniform float uAspect;
+uniform float uTime; uniform vec2 uOffset; uniform vec2 uSize;
 uniform vec3 uMilk; uniform float uStrength; uniform float uGold;
 varying vec2 vUv;
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -25,7 +25,8 @@ float noise(vec2 p) {
 }
 float fbm(vec2 p) { float v = 0., a = .5; for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.; a *= .5; } return v; }
 void main() {
-  vec2 p = vUv * vec2(uAspect, 1.) * 1.8 + uSeed;
+  // coordonnées de la page (px) : un seul champ de nuages continu d'une section à l'autre
+  vec2 p = (vec2(vUv.x, 1. - vUv.y) * uSize + uOffset) / 500.;
   float t = uTime * .04;
   vec2 q = vec2(fbm(p + t), fbm(p + vec2(5.2, 1.3) - t));
   float f = fbm(p + 2. * q + vec2(t * .6, -t * .4));
@@ -37,7 +38,7 @@ void main() {
 const DARK = { milk: [1, 1, 1], strength: 0.16, gold: 0.1 }
 const LIGHT = { milk: [0.118, 0.102, 0.204], strength: 0.13, gold: 0 } // #1e1a34
 
-interface Entry { section: HTMLElement; ctx: CanvasRenderingContext2D; visible: boolean; seed: number; theme: typeof DARK }
+interface Entry { section: HTMLElement; ctx: CanvasRenderingContext2D; visible: boolean; theme: typeof DARK }
 
 const entries = new Set<Entry>()
 let gl: Renderer['gl'] | null = null
@@ -61,8 +62,9 @@ function loop(t: number) {
     if (!e.visible) continue
     const u = program.uniforms
     u.uTime.value = t * 0.001
-    u.uSeed.value = e.seed
-    u.uAspect.value = e.section.clientWidth / Math.max(e.section.clientHeight, 1)
+    const r = e.section.getBoundingClientRect()
+    u.uOffset.value = [r.left + window.scrollX, r.top + window.scrollY]
+    u.uSize.value = [r.width, r.height]
     u.uMilk.value = e.theme.milk
     u.uStrength.value = e.theme.strength
     u.uGold.value = e.theme.gold
@@ -89,7 +91,7 @@ function ensureRenderer(): boolean {
   program = new Program(gl, {
     vertex, fragment, transparent: true,
     uniforms: {
-      uTime: { value: 0 }, uSeed: { value: 0 }, uAspect: { value: 1 },
+      uTime: { value: 0 }, uOffset: { value: [0, 0] }, uSize: { value: [1, 1] },
       uMilk: { value: DARK.milk }, uStrength: { value: 0 }, uGold: { value: 0 },
     },
   })
@@ -122,7 +124,7 @@ export function attachMilk(section: HTMLElement): () => void {
   section.prepend(canvas)
 
   const entry: Entry = {
-    section, ctx: canvas.getContext('2d')!, visible: false, seed: entries.size * 7.31, theme: DARK,
+    section, ctx: canvas.getContext('2d')!, visible: false, theme: DARK,
   }
   entries.add(entry)
 
