@@ -28,13 +28,14 @@ const text = computed(() => content.value?.siteStatus?.[props.mode])
 </script>
 
 <style scoped>
-/* Contenu centré dans l'écran, mentions réglementaires en bas */
+/* Tient dans la fenêtre : contenu centré, mentions réglementaires en bas, tailles calées sur la hauteur */
 .site-status {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 4rem 1.25rem 0;
+  padding: clamp(1.5rem, 5vh, 4rem) 1.25rem 0;
   background: linear-gradient(135deg, #1e1a34 0%, #2d2850 45%, #1a2b4a 100%);
 }
 
@@ -49,15 +50,15 @@ const text = computed(() => content.value?.siteStatus?.[props.mode])
 
 .site-status__legal {
   width: 100%;
-  margin-top: 3rem;
+  margin-top: clamp(1rem, 3vh, 3rem);
 }
 
 .site-status__logo {
   display: block;
-  height: 260px;
+  height: clamp(90px, 30vh, 280px);
   width: auto;
   max-width: 100%;
-  margin: 0 auto 2.5rem;
+  margin: 0 auto clamp(1rem, 4vh, 2.5rem);
   object-fit: contain;
   filter: brightness(0) invert(1) drop-shadow(0 4px 24px rgba(201, 168, 76, 0.35));
 }
@@ -74,7 +75,7 @@ const text = computed(() => content.value?.siteStatus?.[props.mode])
   height: 3px;
   background: linear-gradient(90deg, var(--color-gold), var(--color-gold-dark));
   border-radius: 2px;
-  margin: 1.5rem auto;
+  margin: clamp(0.75rem, 2.5vh, 1.5rem) auto;
 }
 
 .site-status__message {
@@ -86,7 +87,7 @@ const text = computed(() => content.value?.siteStatus?.[props.mode])
 
 @media (max-width: 640px) {
   .site-status__logo {
-    height: 150px;
+    height: clamp(80px, 20vh, 150px);
   }
 }
 </style>
