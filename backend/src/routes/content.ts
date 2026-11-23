@@ -399,6 +399,17 @@ const defaultContent: SiteContent = {
     "about": true,
     "stats": true,
     "contact": true
+  },
+  "siteStatus": {
+    "mode": "online",
+    "maintenance": {
+      "title": "Site en maintenance",
+      "message": "Notre site fait l'objet d'une maintenance et sera de nouveau disponible très prochainement. Pour toute demande, contactez-nous au {telephone} ou à {email}."
+    },
+    "construction": {
+      "title": "Site en reconstruction",
+      "message": "Notre nouveau site est en cours de préparation. Pour toute demande, contactez-nous au {telephone} ou à {email}."
+    }
   }
 };
 

@@ -214,6 +214,20 @@ export interface FooterContent {
   cookiesText: string
 }
 
+/** Statut public du site : en ligne, ou page d'information à la place des sections */
+export type SiteStatusMode = 'online' | 'maintenance' | 'construction'
+
+export interface StatusPageText {
+  title: string
+  message: string
+}
+
+export interface SiteStatus {
+  mode: SiteStatusMode
+  maintenance: StatusPageText
+  construction: StatusPageText
+}
+
 export interface SiteContent {
   nav: NavContent
   hero: HeroContent
@@ -227,6 +241,7 @@ export interface SiteContent {
   footer: FooterContent
   sectionsOrder: string[]
   sectionsVisible: Record<string, boolean>
+  siteStatus: SiteStatus
 }
 
 export interface SeoConfig {

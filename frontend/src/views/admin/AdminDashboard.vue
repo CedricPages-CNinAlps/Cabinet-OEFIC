@@ -39,6 +39,13 @@
         </button>
       </nav>
       <div class="admin-sidebar__bottom">
+        <button
+          v-if="localContent.siteStatus.mode !== 'online'"
+          class="admin-sidebar__status"
+          @click="selectTab('status')"
+        >
+          ● {{ localContent.siteStatus.mode === 'maintenance' ? 'Site en maintenance' : 'Site en reconstruction' }}
+        </button>
         <a :href="siteUrl" target="_blank" class="admin-sidebar__preview">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Voir le site
@@ -340,6 +347,52 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
             Enregistrer
 </button>
+      </div>
+
+      <!-- ===========================
+           ONGLET : Statut du site
+           =========================== -->
+      <div v-if="activeTab === 'status'" class="admin-panel">
+        <div class="admin-section">
+          <h3>Statut du site public</h3>
+          <p class="admin-section-hint">
+            Activé, le site public affiche une page d'information à la place des sections et du menu ; le pied de page (mentions légales) reste affiché.
+            Connecté au backoffice, vous continuez de voir le vrai site, avec un bandeau. Appliqué immédiatement.
+          </p>
+          <div class="status-toggles">
+            <button
+              v-for="opt in statusOptions"
+              :key="opt.mode"
+              type="button"
+              class="status-toggle"
+              :class="{ 'status-toggle--on': localContent.siteStatus.mode === opt.mode }"
+              :aria-pressed="localContent.siteStatus.mode === opt.mode"
+              @click="toggleStatus(opt.mode)"
+            >
+              <span class="status-toggle__icon">{{ opt.icon }}</span>
+              <span class="status-toggle__label">{{ opt.label }}</span>
+              <span class="status-toggle__state">{{ localContent.siteStatus.mode === opt.mode ? 'ACTIVÉ' : 'désactivé' }}</span>
+            </button>
+          </div>
+          <p class="admin-section-hint">
+            Statut actuel : <strong>{{ localContent.siteStatus.mode === 'online' ? 'site en ligne normalement' : localContent.siteStatus.mode === 'maintenance' ? 'site en maintenance' : 'site en reconstruction' }}</strong>
+          </p>
+        </div>
+        <div v-for="opt in statusOptions" :key="opt.mode" class="admin-section">
+          <h3>Page « {{ opt.label }} »</h3>
+          <div class="form-group">
+            <label>Titre</label>
+            <input v-model="localContent.siteStatus[opt.mode].title" type="text" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea v-model="localContent.siteStatus[opt.mode].message" class="form-control" rows="4"></textarea>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-save" @click="saveContent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+            Enregistrer les textes
+          </button>
       </div>
 
       <!-- ===========================
@@ -1275,7 +1328,7 @@ import draggable from 'vuedraggable'
 import { useSiteConfigStore } from '@/stores/siteConfig'
 import { useAuthStore } from '@/stores/auth'
 import { useApi } from '@/composables/useApi'
-import type { SiteConfig, SiteContent, SeoConfig, TrackingConfig, MediaFile, LogoSlider } from '@/types'
+import type { SiteConfig, SiteContent, SeoConfig, TrackingConfig, MediaFile, LogoSlider, SiteStatusMode } from '@/types'
 import FontPicker from '@/components/admin/FontPicker.vue'
 import { resolveAssetUrl, resolveMediaUrl } from '@/utils/asset'
 
@@ -1324,6 +1377,14 @@ if (!localContent.sectionsVisible) localContent.sectionsVisible = {}
 if (localContent.sectionsVisible.familyOffice === undefined) {
   localContent.sectionsVisible.familyOffice = true
 }
+// Contenu enregistré avant l'ajout du statut du site (maintenance / reconstruction)
+if (!localContent.siteStatus) {
+  localContent.siteStatus = {
+    mode: 'online',
+    maintenance: { title: 'Site en maintenance', message: '' },
+    construction: { title: 'Site en reconstruction', message: '' }
+  }
+}
 const localSeo = reactive<SeoConfig>(JSON.parse(JSON.stringify(seo.value || { title: '', description: '', keywords: '', ogImage: '', canonicalUrl: '' })))
 const localTracking = reactive<TrackingConfig>(JSON.parse(JSON.stringify(tracking.value || { gtmId: '', ga4Id: '', uaId: '', matomoUrl: '', matomoSiteId: '', matomoTagManagerUrl: '', tiktokId: '', googleMapsKey: '', enabledServices: {} })))
 
@@ -1334,6 +1395,7 @@ const pwSuccess = ref('')
 
 const tabs = [
   { id: 'config', label: 'Configuration', icon: '⚙️' },
+  { id: 'status', label: 'Statut du site', icon: '🚧' },
   { id: 'nav', label: 'Menu', icon: '☰' },
   { id: 'hero', label: 'Hero', icon: '🖼' },
   { id: 'services', label: 'Expertises', icon: '🏛' },
@@ -1399,6 +1461,24 @@ async function saveContent() {
     await store.updateContent(localContent)
     showSave('✓ Contenu enregistré')
   } catch (e) {
+    showSave('Erreur : ' + (e as Error).message, 'err')
+  }
+}
+
+const statusOptions = [
+  { mode: 'maintenance', label: 'Site en maintenance', icon: '🔧' },
+  { mode: 'construction', label: 'Site en reconstruction', icon: '🚧' }
+] as const
+
+// Bascule immédiate : n'enregistre que le statut, pas les modifications en cours des autres onglets
+async function toggleStatus(mode: SiteStatusMode) {
+  const previous = localContent.siteStatus.mode
+  localContent.siteStatus.mode = previous === mode ? 'online' : mode
+  try {
+    await store.updateContent({ siteStatus: { ...store.content!.siteStatus, mode: localContent.siteStatus.mode } })
+    showSave(localContent.siteStatus.mode === 'online' ? '✓ Site remis en ligne' : '✓ Statut activé')
+  } catch (e) {
+    localContent.siteStatus.mode = previous
     showSave('Erreur : ' + (e as Error).message, 'err')
   }
 }
@@ -1612,6 +1692,69 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.admin-sidebar__status {
+  width: 100%;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(201, 168, 76, 0.18);
+  color: var(--color-gold);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.status-toggles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.status-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 1.5rem 1rem;
+  border: 2px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-bg);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.status-toggle:hover {
+  border-color: var(--color-gold);
+  transform: translateY(-2px);
+}
+
+.status-toggle--on {
+  border-color: var(--color-gold);
+  background: rgba(201, 168, 76, 0.12);
+}
+
+.status-toggle__icon {
+  font-size: 1.8rem;
+}
+
+.status-toggle__label {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.status-toggle__state {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.status-toggle--on .status-toggle__state {
+  color: var(--color-gold-dark);
+  font-weight: 700;
+}
+
 /* ===========================
    Layout Admin
    =========================== */
