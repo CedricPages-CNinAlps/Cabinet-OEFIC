@@ -35,7 +35,7 @@ void main() {
 }`
 
 const DARK = { milk: [1, 1, 1], strength: 0.16, gold: 0.1 }
-const LIGHT = { milk: [0.118, 0.102, 0.204], strength: 0.08, gold: 0 } // #1e1a34
+const LIGHT = { milk: [0.118, 0.102, 0.204], strength: 0.13, gold: 0 } // #1e1a34
 
 interface Entry { section: HTMLElement; ctx: CanvasRenderingContext2D; visible: boolean; seed: number; theme: typeof DARK }
 
