@@ -36,7 +36,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
+import { startSmoothScroll } from '@/animations/motion'
 import { storeToRefs } from 'pinia'
 import { useSiteConfigStore } from '@/stores/siteConfig'
 import NavBar from '@/components/layout/NavBar.vue'
@@ -56,4 +57,8 @@ const { displayContent: content } = storeToRefs(useSiteConfigStore())
 const visibleSliders = computed(() =>
   (content.value?.sliders ?? []).filter(s => s.visible && s.logos.length)
 )
+
+let stopSmoothScroll = () => {}
+onMounted(() => { stopSmoothScroll = startSmoothScroll() })
+onUnmounted(() => stopSmoothScroll())
 </script>

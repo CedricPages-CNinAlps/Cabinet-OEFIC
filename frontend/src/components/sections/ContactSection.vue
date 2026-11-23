@@ -1,7 +1,7 @@
 <template>
   <section class="contact section" :style="sectionBg">
     <div class="container">
-      <div class="section-header">
+      <div v-reveal class="section-header">
         <span v-if="contact?.eyebrow" class="eyebrow">{{ contact.eyebrow }}</span>
         <h2>{{ contact?.title }}</h2>
         <div class="divider-gold"></div>

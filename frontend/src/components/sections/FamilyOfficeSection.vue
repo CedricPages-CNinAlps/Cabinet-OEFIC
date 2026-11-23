@@ -1,7 +1,7 @@
 <template>
   <section v-if="fo" class="family-office section" :style="sectionBg">
     <div class="container">
-      <div class="section-header">
+      <div v-reveal class="section-header">
         <span class="eyebrow">{{ fo.eyebrow || 'Family Office' }}</span>
         <h2>{{ fo.title }}</h2>
         <div class="divider-gold"></div>
@@ -10,10 +10,14 @@
 
       <!-- Piliers -->
       <div class="family-office__pillars">
-        <div v-for="(pillar, i) in fo.pillars" :key="i" class="fo-pillar">
-          <span class="fo-pillar__num">{{ String(i + 1).padStart(2, '0') }}</span>
-          <h3 class="fo-pillar__title">{{ pillar.title }}</h3>
-          <p class="fo-pillar__desc">{{ pillar.description }}</p>
+        <div v-for="(pillar, i) in fo.pillars" :key="i" v-reveal="(i % 3) * 0.12" v-tilt class="atropos fo-pillar-tilt">
+          <div class="atropos-scale"><div class="atropos-rotate"><div class="atropos-inner">
+            <div class="fo-pillar">
+              <span class="fo-pillar__num" data-atropos-offset="6">{{ String(i + 1).padStart(2, '0') }}</span>
+              <h3 class="fo-pillar__title" data-atropos-offset="3">{{ pillar.title }}</h3>
+              <p class="fo-pillar__desc">{{ pillar.description }}</p>
+            </div>
+          </div></div></div>
         </div>
       </div>
 
@@ -21,7 +25,7 @@
       <div v-if="fo.steps?.length" class="family-office__method">
         <h3 class="family-office__method-title">{{ fo.stepsTitle || 'Notre méthode' }}</h3>
         <ol class="family-office__steps">
-          <li v-for="(step, i) in fo.steps" :key="i" class="fo-step">
+          <li v-for="(step, i) in fo.steps" :key="i" v-reveal="i * 0.1" class="fo-step">
             <span class="fo-step__index">{{ i + 1 }}</span>
             <strong class="fo-step__title">{{ step.title }}</strong>
             <span class="fo-step__desc">{{ step.description }}</span>
@@ -91,7 +95,17 @@ const paragraphs = computed(() =>
   gap: 1.5rem;
 }
 
+/* Couches Atropos : la carte remplit la cellule de grille, coins arrondis repris par l'inner */
+.fo-pillar-tilt,
+.fo-pillar-tilt :deep(.atropos-scale),
+.fo-pillar-tilt :deep(.atropos-rotate),
+.fo-pillar-tilt :deep(.atropos-inner) {
+  height: 100%;
+  border-radius: 20px;
+}
+
 .fo-pillar {
+  height: 100%;
   border: 1px solid rgba(201, 168, 76, 0.25);
   border-radius: 20px;
   padding: 2rem 1.75rem;

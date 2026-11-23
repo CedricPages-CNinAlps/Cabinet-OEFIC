@@ -187,6 +187,40 @@ p { line-height: 1.75; }
   box-shadow: 0 12px 40px rgba(201, 168, 76, 0.4);
 }
 
+/* Reflet lumineux qui balaie le bouton au survol */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.7s ease;
+}
+
+.btn-primary:hover::after {
+  transform: translateX(120%);
+}
+
+/* Flèche qui avance au survol */
+.btn svg {
+  transition: transform var(--transition-normal);
+}
+
+.btn:hover svg {
+  transform: translateX(4px);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
 .btn-outline {
   background: transparent;
   color: var(--color-text);
@@ -313,6 +347,23 @@ textarea.form-control {
 
 .animate-fade-in-up {
   animation: fadeInUp 0.7s ease forwards;
+}
+
+/* Lenis gère le défilement fluide : le scroll natif « smooth » le ferait saccader */
+html.lenis {
+  scroll-behavior: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 /* ===========================

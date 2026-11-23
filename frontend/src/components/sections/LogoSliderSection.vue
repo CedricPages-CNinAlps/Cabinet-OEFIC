@@ -1,7 +1,7 @@
 <template>
   <section class="logo-slider section" :style="sectionBg">
     <div class="container">
-      <div v-if="slider.eyebrow || slider.title || slider.subtitle" class="section-header logo-slider__head">
+      <div v-if="slider.eyebrow || slider.title || slider.subtitle" v-reveal class="section-header logo-slider__head">
         <span v-if="slider.eyebrow" class="eyebrow">{{ slider.eyebrow }}</span>
         <h2 v-if="slider.title">{{ slider.title }}</h2>
         <div v-if="slider.title" class="divider-gold"></div>

@@ -1,7 +1,7 @@
 <template>
   <section class="services section" :style="sectionBg">
     <div class="container">
-      <div class="section-header">
+      <div v-reveal class="section-header">
         <span v-if="header?.eyebrow" class="eyebrow">{{ header.eyebrow }}</span>
         <h2>
           <template v-for="(line, i) in titleLines" :key="i"><br v-if="i > 0" />{{ line }}</template>
@@ -12,8 +12,9 @@
 
       <div class="services__grid">
         <a
-          v-for="service in visibleServices"
+          v-for="(service, i) in visibleServices"
           :key="service.id"
+          v-reveal="(i % 3) * 0.12"
           class="service-card"
           :href="service.link || '#contact'"
           :style="service.bgColor ? { backgroundColor: service.bgColor } : {}"

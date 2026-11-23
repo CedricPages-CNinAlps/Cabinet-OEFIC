@@ -1,5 +1,5 @@
 <template>
-  <header class="navbar" :class="{ 'navbar--scrolled': isScrolled }">
+  <header class="navbar" :class="{ 'navbar--scrolled': isScrolled, 'navbar--hidden': isHidden && !menuOpen }">
     <div class="navbar__container">
       <!-- Logo -->
       <a href="#" class="navbar__logo" @click.prevent="scrollToTop">
@@ -9,13 +9,14 @@
       <!-- Nav Links (desktop) -->
       <nav class="navbar__nav" :class="{ 'navbar__nav--open': menuOpen }">
         <a
-          v-for="link in nav?.links"
+          v-for="(link, i) in nav?.links"
           :key="link.label + link.href"
           :href="link.href"
           class="navbar__link"
+          :style="{ '--i': i }"
           @click="closeMenu"
         >{{ link.label }}</a>
-        <a v-if="nav?.ctaText" :href="nav.ctaLink || '#contact'" class="btn btn-primary navbar__cta" @click="closeMenu">
+        <a v-if="nav?.ctaText" :href="nav.ctaLink || '#contact'" class="btn btn-primary navbar__cta" :style="{ '--i': nav?.links?.length ?? 0 }" @click="closeMenu">
           {{ nav.ctaText }}
         </a>
       </nav>
@@ -45,10 +46,18 @@ const { displayConfig: config, displayContent: content } = storeToRefs(useSiteCo
 const nav = computed(() => content.value?.nav)
 
 const isScrolled = ref(false)
+const isHidden = ref(false)
 const menuOpen = ref(false)
+let lastY = 0
 
+// Masquée en descendant (plus de place pour le contenu), réapparaît dès qu'on remonte
 function onScroll() {
-  isScrolled.value = window.scrollY > 60
+  const y = window.scrollY
+  isScrolled.value = y > 60
+  if (Math.abs(y - lastY) > 8) {
+    isHidden.value = y > lastY && y > 400
+    lastY = y
+  }
 }
 
 function toggleMenu() {
@@ -156,6 +165,24 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   transform: scaleX(1);
 }
 
+/* Soulignement qui se dessine de gauche à droite et repart vers la droite */
+.navbar__link::after {
+  transform-origin: right;
+  transition: transform 0.35s cubic-bezier(.22, 1, .36, 1);
+}
+
+.navbar__link:hover::after {
+  transform-origin: left;
+}
+
+.navbar--hidden {
+  transform: translateY(-100%);
+}
+
+.navbar:focus-within {
+  transform: none;
+}
+
 .navbar__cta {
   padding: 0.625rem 1.5rem;
   font-size: 0.875rem;
@@ -235,6 +262,19 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 
   .navbar__nav--open {
     right: 0;
+  }
+
+  /* Liens qui glissent un par un à l'ouverture du menu */
+  .navbar__nav > a {
+    opacity: 0;
+    transform: translateX(24px);
+    transition: opacity 0.3s ease, transform 0.4s cubic-bezier(.22, 1, .36, 1), color 0.2s ease;
+  }
+
+  .navbar__nav--open > a {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(0.12s + var(--i, 0) * 0.06s);
   }
 
   .navbar__link {
