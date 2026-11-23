@@ -169,9 +169,14 @@ const hasLegalNumbers = computed(() => {
   border-bottom: 1px solid color-mix(in srgb, var(--footer-text, white) 10%, transparent);
 }
 
-.footer--legal-only .footer__main {
-  padding-top: 1.5rem;
+/* Pleine largeur : trait de séparation et mentions d'un bord à l'autre de l'écran */
+.footer--legal-only {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer--legal-only .footer__main {
+  max-width: none;
+  padding: 1.5rem clamp(1rem, 3vw, 2.5rem) 1rem;
   border-bottom: 0;
 }
 

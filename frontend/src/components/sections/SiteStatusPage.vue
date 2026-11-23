@@ -35,7 +35,7 @@ const text = computed(() => content.value?.siteStatus?.[props.mode])
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: clamp(1.5rem, 5vh, 4rem) 1.25rem 0;
+  padding: clamp(1.5rem, 5vh, 4rem) 0 0;
   background: linear-gradient(135deg, #1e1a34 0%, #2d2850 45%, #1a2b4a 100%);
 }
 
@@ -44,7 +44,8 @@ const text = computed(() => content.value?.siteStatus?.[props.mode])
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 680px;
+  width: 100%;
+  padding: 0 clamp(1rem, 3vw, 2.5rem);
   text-align: center;
 }
 
