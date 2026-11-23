@@ -357,7 +357,7 @@
           <h3>Statut du site public</h3>
           <p class="admin-section-hint">
             Activé, le site public affiche une page d'information à la place des sections et du menu ; le pied de page (mentions légales) reste affiché.
-            Connecté au backoffice, vous continuez de voir le vrai site, avec un bandeau. Appliqué immédiatement.
+            Connecté au backoffice, un bandeau vous permet d'afficher quand même le vrai site pour le vérifier. Appliqué immédiatement.
           </p>
           <div class="status-toggles">
             <button

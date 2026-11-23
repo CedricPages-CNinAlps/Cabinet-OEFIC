@@ -1,8 +1,12 @@
 <template>
   <!-- Rien avant le chargement du contenu : le statut (maintenance…) n'est pas encore connu -->
   <div v-if="content" class="home">
-    <div v-if="adminPreview" class="home__status-banner" role="status">
-      {{ statusLabel }} — visible uniquement par vous (connecté au backoffice)
+    <div v-if="statusMode !== 'online' && auth.isAuthenticated" class="home__status-banner" role="status">
+      <template v-if="statusPage">{{ statusLabel }} — page vue par les visiteurs</template>
+      <template v-else>Site visible uniquement par vous (connecté au backoffice)</template>
+      <button type="button" @click="adminBypass = !adminBypass">
+        {{ statusPage ? 'Voir le site quand même' : 'Revenir à la page visiteurs' }}
+      </button>
     </div>
 
     <SiteStatusPage v-if="statusPage" :mode="statusPage" />
@@ -42,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { startSmoothScroll } from '@/animations/motion'
 import { storeToRefs } from 'pinia'
 import { useSiteConfigStore } from '@/stores/siteConfig'
@@ -64,10 +68,10 @@ const auth = useAuthStore()
 
 const statusMode = computed(() => content.value?.siteStatus?.mode ?? 'online')
 const statusLabel = computed(() => statusMode.value === 'maintenance' ? 'Site en maintenance' : 'Site en reconstruction')
-// L'admin connecté voit le vrai site (pour le vérifier) avec un bandeau ; les visiteurs voient la page d'information
-const adminPreview = computed(() => statusMode.value !== 'online' && auth.isAuthenticated)
+// Tout le monde voit la page d'information ; l'admin connecté peut afficher le vrai site pour le vérifier
+const adminBypass = ref(false)
 const statusPage = computed(() =>
-  statusMode.value !== 'online' && !auth.isAuthenticated ? statusMode.value : null
+  statusMode.value !== 'online' && !(auth.isAuthenticated && adminBypass.value) ? statusMode.value : null
 )
 
 // Sliders affichés à la suite, dans l'ordre du backoffice ; un slider sans logo est masqué
@@ -96,5 +100,20 @@ onUnmounted(() => stopSmoothScroll())
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   text-align: center;
   max-width: calc(100% - 2rem);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.home__status-banner button {
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+  background: #fff;
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
 }
 </style>
