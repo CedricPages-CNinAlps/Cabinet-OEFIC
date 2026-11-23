@@ -146,8 +146,17 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* Fond bleu nuit par défaut (couleur modifiable dans le backoffice), textes clairs */
 .logo-slider {
-  background: var(--color-bg);
+  background: var(--color-text);
+}
+
+.logo-slider h2 {
+  color: #fff;
+}
+
+.logo-slider .section-header p {
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .logo-slider__head {
@@ -201,9 +210,10 @@ onUnmounted(() => {
   transition: filter 0.3s ease, opacity 0.3s ease;
 }
 
+/* Mode « niveaux de gris » : logos en blanc pour rester lisibles sur le bleu nuit */
 .logo-slider__viewport--grayscale img {
-  filter: grayscale(1);
-  opacity: 0.65;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
 }
 
 .logo-slider__viewport--grayscale .logo-slider__item:hover img {
