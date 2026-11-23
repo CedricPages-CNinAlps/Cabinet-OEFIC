@@ -1,6 +1,6 @@
 # Cabinet OEFIC — Fiche de synthèse
 
-_Mise à jour : 10/10/2026 — branche `feature/setup`_
+_Mise à jour : 23/11/2026 — branche `master` (publiée sur GitHub Pages)_
 
 ---
 
@@ -42,13 +42,14 @@ npm run dev          # lance l'API (port 3001) et le site (port 5173)
 | Onglet | Contenu |
 |---|---|
 | Configuration | Identité, couleurs, polices, **informations réglementaires** (ORIAS, CIF, association, COA, IOBSP, Carte T, RC Pro, médiateur, RCS, TVA), coordonnées, réseaux sociaux, footer (dont titres des colonnes et lien cookies) |
+| **Statut du site** _(nouveau)_ | Deux bascules **Site en maintenance** / **Site en reconstruction** (appliquées immédiatement, une seule active à la fois) et textes de chaque page (titre, message, variables acceptées). Voir §7 |
 | **Menu** _(nouveau)_ | Liens du menu (ordre par glisser-déposer) et bouton « Prendre rendez-vous » |
 | Hero | Titre, sous-titre, boutons, badge, texte « Découvrir », choix des chiffres clés affichés (glisser-déposer) |
 | **Expertises** | En-tête de la section (sur-titre, titre, introduction, texte « En savoir plus ») et cartes d'expertise : ordre (glisser-déposer), icône, visibilité. Elles alimentent aussi le footer, les sujets du formulaire de contact et le compteur « expertises » du hero |
 | **Family Office** _(nouveau)_ | Afficher ou masquer la section, introduction, piliers et étapes de la méthode (ordre par glisser-déposer), bouton d'appel à l'action |
 | À propos | Sur-titre, texte, badge, jalons de la frise |
 | Statistiques | Chiffres clés : valeur saisie ou automatique (ancienneté, nombre d'expertises) |
-| **Slider** _(nouveau)_ | Autant de sliders de logos que voulu (ex. « Partenaires financiers », « Partenaires assureurs »). Chacun est un bloc indépendant affiché à la suite des autres, avant Contact. Par slider : titres, logos (import par bouton, glisser-déposer de fichiers ou médiathèque, réordonnables y compris d'un slider à l'autre), **réglage du temps** (continu : durée d'un tour en secondes ; par étapes : secondes entre deux logos), sens, gris, fond. Ajout et suppression à volonté |
+| **Slider** _(nouveau)_ | Autant de sliders de logos que voulu (ex. « Partenaires financiers », « Partenaires assureurs »). Chacun est un bloc indépendant affiché à la suite des autres, avant Contact. Par slider : titres, logos (import par bouton, glisser-déposer de fichiers ou médiathèque, réordonnables y compris d'un slider à l'autre), **réglage du temps** (continu : durée d'un tour en secondes ; par étapes : secondes entre deux logos), sens, gris, fond (bleu nuit par défaut ; en mode gris, les logos s'affichent en blanc : prévoir des logos à **fond transparent**). Ajout et suppression à volonté |
 | Contact / EmailJS | Sur-titre, textes, **horaires d'ouverture**, titres de la carte coordonnées, **tous les libellés et messages du formulaire**, identifiants EmailJS |
 | SEO | Titre, description, mots-clés. Ils sont maintenant appliqués au chargement de la page |
 | Tracking & Cookies | GTM, GA4, Matomo, Maps, pixels (consentement via Tarte au Citron) |
@@ -188,12 +189,41 @@ Aucun des deux concurrents n'en propose. OEFIC en propose désormais un :
 
 ### 4.3 Points d'attention
 - Sur le poste local, `git push` et `git fetch` en HTTPS échouent (« unable to get local issuer certificate ») à cause de l'inspection TLS du proxy ou de l'antivirus. Il faut corriger le certificat racine plutôt que désactiver la vérification.
-- La branche `feature/setup` n'est pas encore fusionnée dans `master`. Le workflow GitHub Pages ne s'exécutera qu'après cette fusion.
+- Tout le travail est fusionné dans `master` (23/11/2026) et le workflow GitHub Pages publie automatiquement à chaque push sur `master`.
+- Le **backoffice n'est pas disponible sur GitHub Pages** : c'est un hébergement statique, le backend (API, connexion, données chiffrées, médias) n'y tourne pas. Pour l'avoir en ligne : §4.2 (recommandé) ou backend sur un hébergeur Node séparé (adresse d'API à rendre configurable, CORS, disque persistant obligatoire).
+- Le **statut du site** (maintenance / reconstruction) activé dans le backoffice local n'atteint GitHub Pages qu'après mise à jour de `frontend/src/data/content.json` (§4.1). Les données publiées sont en statut « en ligne ».
+- Avant toute mise en ligne du backend : remplacer le mot de passe par défaut `oefic2024` (codé en dur dans `backend/src/routes/auth.ts`) et réutiliser la même `CRYPTO_KEY` que le poste local.
+- Poste local : `git checkout master` peut échouer car `frontend/public/assets/logo.png` et `robots.txt` sont verrouillés par l'IDE. Fusionner sans changer de branche : `git push origin <branche>:master` (avance rapide), puis `git branch -f master origin/master`.
 - `frontend/public/assets/og-image.jpg` est référencé (Open Graph) mais n'existe pas. Il faut ajouter une image de 1200×630.
 
 ---
 
 ## 5. Stack technique (rappel)
-- **Front** : Vue 3, TypeScript, Vite, Pinia, Vue Router, GSAP, EmailJS, Tarte au Citron
+- **Front** : Vue 3, TypeScript, Vite, Pinia, Vue Router, GSAP, EmailJS, Tarte au Citron, Lenis 1.3.27, Atropos 2.0.2, OGL 1.0.11 (versions figées)
 - **Back** : Node.js, Express, TypeScript, JWT, bcrypt, AES-256-GCM, Multer
 - **Charte** : bleu nuit `#1e1a34`, or `#C9A84C`, fonds `#FFFFFF` / `#F5F5F7`
+
+---
+
+## 6. Animations du site public
+Code dans `frontend/src/animations/`. Toutes sont **coupées si le visiteur a activé « réduire les animations »** dans son système.
+
+| Zone | Effet | Mise en œuvre |
+|---|---|---|
+| Fonds de toutes les sections et du footer | Voile « nuages » animé : blanc et reflets or sur les fonds bleu nuit, bleu nuit sur les fonds clairs. La couleur est déduite du fond réel (suit le backoffice). Nuages continus d'une section à l'autre | `v-milk` → `milkyBackground.ts` (OGL, un seul contexte WebGL, rendu basse résolution, pause hors écran). Réglages : `strength` (fonds foncés 0.16, clairs 0.13), taille des nuages `500.` |
+| Défilement | Défilement fluide, ancres décalées de la barre de navigation | Lenis, page d'accueil seulement (`startSmoothScroll`) |
+| Titres de section, cartes expertises, étapes Family Office | Apparition en fondu décalé au défilement | `v-reveal="délai"` (Web Animations API) |
+| Piliers Family Office | Inclinaison 3D au survol | `v-tilt` (Atropos) |
+| Boutons | Reflet lumineux, flèche qui avance, effet d'appui | CSS (`main.css`) |
+| Menu | Barre masquée en descendant, réaffichée en remontant ; soulignement directionnel ; liens mobiles en cascade | `NavBar.vue` |
+
+Sans WebGL, les fonds restent unis (aucune perte de contenu).
+
+---
+
+## 7. Statut du site : maintenance / reconstruction
+- **Backoffice** → onglet **Statut du site** : un clic active le mode, un second clic remet le site en ligne. Un rappel doré s'affiche dans la barre latérale tant qu'un mode est actif.
+- **Site public** : page plein écran (`SiteStatusPage.vue`) sur fond bleu nuit avec nuages, logo centré, titre et message, et en bas **uniquement les mentions réglementaires** (sur toute la largeur). Pas de menu ni de pied de page complet (donc pas de bouton « Gestion des cookies » ni d'accès admin : passer par `/admin`).
+- **Administrateur connecté** : voit la même page que les visiteurs, avec un bandeau **« Voir le site quand même »** pour vérifier le site pendant la maintenance.
+- Données : `content.siteStatus` (`mode`: `online` | `maintenance` | `construction`, plus `title` / `message` par mode).
+- Limite : site statique, pas de code HTTP 503 envoyé aux moteurs de recherche (sans gravité pour une maintenance courte).
